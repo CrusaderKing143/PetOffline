@@ -15,6 +15,9 @@
 /[Uu]ser[Ss]ettings/
 *.log
 
+# Restored by Unity Package Manager from the official registry.
+/Packages/com.unity.ai.assistant/
+
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
 *.blend1.meta
