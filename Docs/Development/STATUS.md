@@ -1,8 +1,8 @@
 # Pet Offline Development Status
 
-更新时间：2026-07-15 23:30（UTC+8）
+更新时间：2026-07-15 23:35（UTC+8）
 
-总体状态：完整两关垂直切片已实现、可从标题进入并完成两个结局；当前工作树已通过最终架构、EditMode、PlayMode、Windows Player 冒烟、跨进程 Continue、Development/Release 构建与 Release 启动验证。剩余项集中在正式美术替换、首次玩家节奏、性能和干净机/断网外部验收，不影响当前功能版交付。
+总体状态：完整两关垂直切片已实现、可从标题进入并完成两个结局；交付内容已通过最终架构、EditMode、PlayMode、Windows Player 冒烟、跨进程 Continue、Development/Release 构建与 Release 启动验证，并精确提交为 `2538dab`。剩余项集中在正式美术替换、首次玩家节奏、性能和干净机/断网外部验收，不影响当前功能版交付。
 
 最终 Editor 回归于 23:20–23:22 重跑，晚于 `FullTitleToEndingSmokeTests.cs` 的最后修改；结果为 Validator PASS、EditMode 3/3、PlayMode 33/33。
 
@@ -39,8 +39,8 @@
 | --- | --- | --- |
 | 0 Foundation | 完成 | 已提交于 `d08c995`，并由最终 Validator/测试重新覆盖 |
 | 1 Day 1 | 完成 | 已提交于 `ecc27d5`，最终回归通过 |
-| 2 Day 2 | 完成、当前工作树待精确提交 | 全状态机、世界机关、报告和两结局通过 |
-| 3 UGUI | 完成、当前工作树待精确提交 | 生产面板、真实按钮命令和 Mock/断电测试通过 |
+| 2 Day 2 | 完成，提交于 `2538dab` | 全状态机、世界机关、报告和两结局通过 |
+| 3 UGUI | 完成，提交于 `2538dab` | 生产面板、真实按钮命令和 Mock/断电测试通过 |
 | 4 Art/Audio/VFX | 垂直切片级完成 | 标题资源、程序化世界视觉/音频和关键状态表现已接入；正式角色/家具美术仍可替换 |
 | 5 QA/Build | 功能门槛完成 | 自动测试、Player 冒烟、跨进程 Continue、双 Build、启动和截图已完成；外部体验/性能验收见 KNOWN_GAPS |
 
@@ -56,7 +56,7 @@
 
 - 当前仓库仍有用户或来源不同的 `AGENTS.md`、`Assets/Scenes/Main.unity`、SampleScene 删除、`Docs/Reference` 和 `SceneTemplateSettings.json` 改动。
 - 未执行 reset/checkout，也未覆盖上述内容。
-- 若创建提交，必须精确暂存 PetOffline 交付文件，禁止 `git add -A`。
+- 交付提交 `2538dab` 使用精确文件集创建，未使用 `git add -A`；上述无关改动仍留在工作区。
 
 ## 尚需外部验收
 
