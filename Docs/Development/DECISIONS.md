@@ -32,5 +32,10 @@
 | D-026 | 每个 Milestone 真实导入、编译、相关测试、文档更新和独立 commit | 禁止只凭脚本存在声称完成 |
 | D-027 | 多 Unity 实例时只使用 `relay_win.exe --mcp --instance-id <PetOffline PID>` 或 batchmode | 全局 Unity MCP 的 Console 可能路由到另一工程；Project Root 与目标实例必须同时核对 |
 | D-028 | 当前 Windows standalone 使用已安装的 Mono x64 Player | 本机 Windows Build Support 有 Mono development/release player，未安装 Windows IL2CPP；x64 交付不要求额外模块 |
+| D-029 | Boss Call 成功窗口同时冻结 Camera B 扫描角与检测，而不只是忽略检测结果 | 02 与 Web 行为都明确“安全窗/冻结扫描”；视觉锥保持显示并在窗口结束后继续扫描 |
+| D-030 | Camera B 发现只清除当前任务的临时安全/警戒状态，不取消正在进行的 Boss Call 或重排下一次点名 | 局部重置不得改变独立的定时点名流程 |
+| D-031 | 滑行期间禁止方向、Interact、Push 和 Lie；CarryController 在共享入口再次拒绝主动放物 | 在输入层和世界交互入口各守一次，避免 UI/测试或未来调用绕过规则 |
+| D-032 | 统一由 SceneFlowService 卸载入口停止 DialogueDirector | Bootstrap 对话服务跨 Scene 持久；集中停止可避免返回标题或换关后旧回调串场 |
+| D-033 | PlayMode 键盘测试使用独立虚拟 Keyboard、IgnoreFocus 和显式 device filter | batchmode 无 Game View 焦点；该设置证明真实 Input Action Map，而不是直接写角色状态 |
 
 后续普通调参直接追加决定并继续；只有不可逆产品选择、Unity/License 阻塞或不可恢复资产损坏才请求用户。

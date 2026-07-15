@@ -391,7 +391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1718983953}
   - component: {fileID: 1718983955}
-  - component: {fileID: 1718983954}
+  - component: {fileID: 1718983956}
   m_Layer: 0
   m_Name: LevelFlow
   m_TagString: Untagged
@@ -414,19 +414,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1743875059}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1718983954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718983952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d147c53ad9ed70040a8048bebb22075b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PetOffline.Gameplay::PetOffline.Gameplay.LevelFlowController
-  context: {fileID: 1718983955}
 --- !u!114 &1718983955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -446,6 +433,20 @@ MonoBehaviour:
   cameraId: 
   cameraActive: 0
   cameraAlert: 0
+  report: {fileID: 0}
+--- !u!114 &1718983956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1718983952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15afc9244ff75054ebe646d087ad62fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PetOffline.Gameplay::PetOffline.Gameplay.LevelTwoFlowController
+  context: {fileID: 1718983955}
 --- !u!1 &1743875058
 GameObject:
   m_ObjectHideFlags: 0

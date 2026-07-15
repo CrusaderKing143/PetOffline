@@ -1,46 +1,84 @@
 # Pet Offline Test Report
 
-更新日期：2026-07-15  
-报告状态：Milestone 0 Foundation 已执行真实 Unity 测试。  
-结论：Foundation 通过；Day 1、Day 2、完整 UI、P0 全量与 Build 尚未通过。
+更新日期：2026-07-15
 
-## 环境确认
+报告状态：Milestone 0 Foundation 与 Milestone 1 Day 1 已执行真实 Unity 测试。
+
+结论：Day 1 功能灰盒、架构边界和 Day 1 UIRoot 断电链路通过；Day 2、生产 UI、完整 Smoke 与 Build 尚未通过。
+
+## 环境
 
 | 项目 | 结果 | 证据 |
 | --- | --- | --- |
-| ProjectVersion | 已确认 | 6000.3.14f1 (d68c3f99a318) |
-| 本机 Unity Editor | 已确认存在 | C:\Program Files\Unity 6000.3.14f1\Editor\Unity.exe |
-| Unity License/batchmode 可用性 | PASS | EditMode/PlayMode 日志均 code 0；Personal license 成功解析 |
-| MCP Project Root | PASS（专属 relay） | `D:/UGit/PetOffline`；多实例时禁用全局 Console 结论 |
+| ProjectVersion | PASS | Unity 6000.3.14f1 (d68c3f99a318) |
+| Unity Editor | PASS | `C:\Program Files\Unity 6000.3.14f1\Editor\Unity.exe` |
+| 运行方式 | PASS | PetOffline 无锁时使用 batchmode；未使用指向其他项目的全局 Unity MCP |
+| 编译 | PASS | 最终 Setup/EditMode/PlayMode/Validation 日志无 `error CS` |
 
-## 当前执行结果
+## Milestone 1 实际命令
+
+```powershell
+Unity.exe -batchmode -nographics -quit -projectPath D:\UGit\PetOffline `
+  -executeMethod PetOffline.Editor.DayOneAutomation.SetupDayOneBatch
+
+Unity.exe -batchmode -nographics -quit -projectPath D:\UGit\PetOffline `
+  -executeMethod PetOffline.Editor.ProjectAutomation.SetupBatch
+
+Unity.exe -batchmode -nographics -projectPath D:\UGit\PetOffline `
+  -runTests -testPlatform EditMode -testResults Artifacts\TestResults\EditMode_M1.xml
+
+Unity.exe -batchmode -projectPath D:\UGit\PetOffline `
+  -runTests -testPlatform PlayMode -testResults Artifacts\TestResults\PlayMode_M1.xml
+
+Unity.exe -batchmode -nographics -projectPath D:\UGit\PetOffline `
+  -executeMethod PetOffline.Editor.ProjectValidator.ValidateBatch
+```
+
+Unity 6 Test Runner 完成后在本机保留了 Editor 进程；自动化按 ProjectPath 只关闭 PetOffline 实例并确认 `Temp/UnityLockfile` 清除，未触碰另一个已打开的 Unity 项目。
+
+## 最终执行结果
 
 | Gate | 状态 | 结果文件 |
 | --- | --- | --- |
-| Unity Import/Compile | PASS | EditMode.log、PlayMode.log；PetOffline 程序集成功编译 |
-| Setup/Scenes | PASS | Setup.log；四个 Scene、Input Actions、Build Settings、稳定 Layer ID 已由 Unity 创建并回读 |
-| ValidateBatch/Menu | PASS | Validation.log、ValidationReport.txt；2026-07-15 再次执行菜单 PASS |
-| EditMode | PASS 1/1 | EditMode.xml、EditMode.log；exit code 0 |
-| PlayMode | PASS 3/3 | PlayMode.xml、PlayMode.log；Bootstrap、UIRoot Mock、单 World 并发不变量；exit code 0 |
-| Full title-to-Restore smoke | NOT RUN | 无 |
-| Full title-to-Quiet smoke | NOT RUN | 无 |
-| Windows x64 Development Build | NOT RUN | 无 |
-| Windows x64 Release Build | NOT RUN | Builds/Windows/PetOffline.exe 尚不存在 |
-| Standalone launch | NOT RUN | 无 Player.log/Smoke 结果 |
-| Screenshots | NOT RUN | Artifacts/Screenshots 尚无验收证据 |
+| Day 1 Setup / Scene generation | PASS | `DayOneSetup.log`、`ProjectSetup_M1_Fixed.log` |
+| EditMode | PASS 2/2、Failed 0、Skipped 0 | `EditMode_M1.xml`、`EditMode_M1.log` |
+| PlayMode | PASS 11/11、Failed 0、Skipped 0 | `PlayMode_M1.xml`、`PlayMode_M1.log` |
+| Architecture Validator | PASS | `ValidationReport.txt`、`Validation_M1.log` |
+| Missing Script / RequiredReference | PASS（当前 M0/M1 Scene） | Validator 递归 Scene 层级并检查必需引用 |
+| Full title-to-Restore smoke | NOT RUN | Milestone 2/3/5 |
+| Full title-to-Quiet smoke | NOT RUN | Milestone 2/3/5 |
+| Windows x64 Development/Release | NOT RUN | `Builds/Windows/PetOffline.exe` 尚不存在 |
+| Screenshots | NOT RUN | Milestone 4/5 |
 
-## P0 测试清单
+## 通过的 EditMode
 
-以下全部待实现并实际执行：
+- `ProjectValidatorPasses`：asmdef、Scene、Build Settings、Layer、世界/UI 边界、Missing Script、RequiredReference、唯一 Day1/Day2 runtime。
+- `DayOneCameraAndCarryConfigsMatchPlayableBaseline`：拖鞋 2 秒、Camera B 7.1/54°/0.24 秒、轻物 0.85、重物 0.60、Bark 掉落与 Robot push 0.65。
 
-- [x] Architecture boundary test（Foundation 范围）
-- [ ] UIRoot disabled gameplay test
-- [x] UIRoot mock preview test（Foundation 绑定范围）
-- [ ] Day 1 shoe completion test
-- [ ] Day 1 detection reset test
-- [ ] Day 1 previous-task preservation test
-- [ ] Day 1 pillow and robot interaction test
-- [ ] Day 1 final report transition test
+## 通过的 PlayMode
+
+- Bootstrap 持久服务、无 World 等待状态。
+- 同时切关请求只加载一个 World Scene。
+- 返回标题停止持久 DialogueDirector 且不执行旧 completion callback。
+- UIRoot_Test 在无 World 时绑定 Mock ViewModel。
+- 拖鞋 Goal 需要 2 秒。
+- Camera B 只重置当前拖鞋任务。
+- 抱枕失败保留已完成拖鞋任务。
+- 检测不会取消正在进行的 Boss Call。
+- Boss Call 成功冻结 Camera B 扫描 3 秒；超时进入约 7 秒扩大警戒并自动恢复。
+- 重抱枕 Bark 掉落，Robot 推动 0.65，狗窝 Goal 立即完成。
+- 关闭整个 UIRoot 后仍通过真实 Gameplay Action Map 完成移动、搬运、滑行锁、Camera/Robot FixedUpdate、真实 Goal Trigger、Final Bark、Report→Ending、DayOneCompleted 保存、Day 1 卸载和 Day 2 runtime 绑定。
+
+## P0 清单状态
+
+- [x] Architecture boundary test（M0/M1 范围）
+- [ ] UIRoot disabled gameplay test（Day 1 已通过；Day 2 待 Milestone 2）
+- [x] UIRoot mock preview test（当前 Mock 范围）
+- [x] Day 1 shoe completion test
+- [x] Day 1 detection reset test
+- [x] Day 1 previous-task preservation test
+- [x] Day 1 pillow and robot interaction test
+- [x] Day 1 final report transition test
 - [ ] Day 2 first 10-second confirmation test
 - [ ] Day 2 feeder return resets progress test
 - [ ] Day 2 ignored confirmation pauses progress test
@@ -50,20 +88,12 @@
 - [ ] Day 2 correct-route 20-second completion test
 - [ ] Restore Connection ending test
 - [ ] Keep Quiet ending test
-- [ ] Save/unlock test
-- [ ] Full title-to-ending smoke test：Restore Connection
-- [ ] Full title-to-ending smoke test：Keep Quiet
+- [ ] Save/unlock test（DayOneCompleted + Day2 load 已覆盖；跨进程 Continue 待 M5）
+- [ ] Full title-to-ending smoke：Restore Connection
+- [ ] Full title-to-ending smoke：Keep Quiet
 
-当前通过的 4 个测试只覆盖 Foundation；不得据此勾选 Day 1、Day 2、UIRoot 断电或完整流程。
+## 失败与修复记录
 
-## 最终验收记录要求
+首次 M1 PlayMode 基线为 8/9，失败于 UIRoot-disabled 测试的合成键盘移动。根因是 batchmode 无 Game View 焦点，而测试复用/新增 Keyboard 时未设置 Input System 的 Editor/background 行为。修复为独立虚拟 Keyboard、`IgnoreFocus`、`AllDeviceInputAlwaysGoesToGameView` 和显式 device filter；重跑后完整 PlayMode 11/11。
 
-每次运行后在本文件追加：
-
-- 完整命令、Unity 版本、Git commit、开始/结束时间和退出码。
-- XML/log/截图/Build 的相对路径。
-- Passed、Failed、Skipped 数量。
-- 失败原因、修复 commit 和重跑结果。
-- Standalone 实际启动路径及 Player.log 结论。
-
-测试只有在真实命令退出成功且结果文件可读时才标记通过；脚本存在、Console 无可见红字或手工推测都不是通过证据。
+测试结果只有在 XML 为 Passed、Failed=0、最终日志无编译/引用异常且 Unity 进程退出后才记为通过。

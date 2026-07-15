@@ -43,7 +43,8 @@ namespace PetOffline.Core
             loadedWorldScene = sceneName;
             var scene = SceneManager.GetSceneByName(sceneName);
             SceneManager.SetActiveScene(scene);
-            session?.BindLevel(FindViewModel(scene));
+            FindInScene<ILevelRuntime>(scene)?.Bind(session);
+            session?.BindLevel(FindInScene<ILevelViewModel>(scene));
             transition = null;
         }
 
@@ -55,6 +56,7 @@ namespace PetOffline.Core
 
         IEnumerator UnloadWorldScene()
         {
+            session?.Dialogue?.Stop();
             session?.BindLevel(null);
             if (!string.IsNullOrEmpty(loadedWorldScene) && SceneManager.GetSceneByName(loadedWorldScene).isLoaded)
                 yield return SceneManager.UnloadSceneAsync(loadedWorldScene);
@@ -65,14 +67,14 @@ namespace PetOffline.Core
                 SceneManager.SetActiveScene(bootstrap);
         }
 
-        static ILevelViewModel FindViewModel(Scene scene)
+        static T FindInScene<T>(Scene scene) where T : class
         {
             foreach (var root in scene.GetRootGameObjects())
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
-                if (behaviour is ILevelViewModel model)
-                    return model;
+                if (behaviour is T component)
+                    return component;
 
-            Debug.LogError($"Scene {scene.name} has no ILevelViewModel.");
+            Debug.LogError($"Scene {scene.name} has no {typeof(T).Name}.");
             return null;
         }
     }

@@ -8,33 +8,50 @@ namespace PetOffline.Core
         [SerializeField, RequiredReference] SceneFlowService sceneFlow;
         [SerializeField, RequiredReference] SaveService saveService;
         [SerializeField, RequiredReference] InputRouter inputRouter;
+        [SerializeField, RequiredReference] DialogueDirector dialogueDirector;
 
         ILevelViewModel currentLevel;
 
         public ILevelViewModel CurrentLevel => currentLevel;
+        public InputRouter Input => inputRouter;
+        public DialogueDirector Dialogue => dialogueDirector;
+        public SaveService Save => saveService;
         public event Action<ILevelViewModel> LevelChanged;
         public event Action ContinueReportRequested;
         public event Action<FinalChoice> ChoiceRequested;
 
-        public void Configure(SceneFlowService flow, SaveService save, InputRouter input)
+        public void Configure(SceneFlowService flow, SaveService save, InputRouter input) =>
+            Configure(flow, save, input, dialogueDirector);
+
+        public void Configure(SceneFlowService flow, SaveService save, InputRouter input, DialogueDirector dialogue)
         {
             sceneFlow = flow;
             saveService = save;
             inputRouter = input;
-            sceneFlow.Configure(this);
+            dialogueDirector = dialogue;
+            sceneFlow?.Configure(this);
         }
 
         void Awake()
         {
             sceneFlow?.Configure(this);
-            inputRouter?.SetGameplayMode(false);
+            SetGameplayMode(false);
         }
 
         public void BindLevel(ILevelViewModel level)
         {
             currentLevel = level;
-            inputRouter?.SetGameplayMode(level != null);
+            if (level == null)
+                SetGameplayMode(false);
             LevelChanged?.Invoke(level);
+        }
+
+        public void SetGameplayMode(bool enabled) => inputRouter?.SetGameplayMode(enabled);
+
+        public void CompleteDayOne()
+        {
+            saveService?.MarkDayOneCompleted();
+            sceneFlow?.LoadWorld(LevelId.Day2);
         }
 
         public void StartNewGame() => sceneFlow.LoadWorld(LevelId.Day1);

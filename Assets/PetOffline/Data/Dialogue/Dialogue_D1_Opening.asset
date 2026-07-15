@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c3db162d4f74934a91f8efc08c799be, type: 3}
+  m_Name: Dialogue_D1_Opening
+  m_EditorClassIdentifier: PetOffline.Core::PetOffline.Core.DialogueSequenceSO
+  sequenceId: D1.Opening
+  pauseGameplay: 1
+  skippable: 1
+  completionEventId: D1.Opening.Complete
+  lines:
+  - speakerId: Boss
+    text: "\u62FF\u94C1\uFF0C\u628A\u4E3B\u4EBA\u7684\u62D6\u978B\u5E26\u5230\u6444\u50CF\u5934\u524D\u3002"
+    duration: 1.6
+  - speakerId: AI
+    text: "\u8BF7\u642C\u8FD0\u3002\u8B66\u544A\uFF1A\u4F1A\u8BAE\u671F\u95F4\u7981\u6B62\u642C\u8FD0\u3002"
+    duration: 1.8
+  - speakerId: Owner
+    text: "\u8FD9\u4E24\u6761\u89C4\u5219\u662F\u4E0D\u662F\u51B2\u7A81\u4E86\uFF1F\u6309
+      Space \u6C6A\u4E00\u58F0\u3002"
+    duration: 1.8

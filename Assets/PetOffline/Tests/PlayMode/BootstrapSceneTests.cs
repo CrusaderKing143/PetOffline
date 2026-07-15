@@ -64,5 +64,27 @@ namespace PetOffline.Tests.PlayMode
                 yield return null;
             Assert.That(SceneManager.GetSceneByName(SceneNames.Day1).isLoaded, Is.False);
         }
+
+        [UnityTest]
+        public IEnumerator ReturningToTitleStopsPersistentDialogueWithoutCompletingIt()
+        {
+            SceneManager.LoadScene(SceneNames.Bootstrap);
+            yield return null;
+
+            var session = Object.FindAnyObjectByType<GameSession>();
+            var sequence = ScriptableObject.CreateInstance<DialogueSequenceSO>();
+            sequence.Configure("Test.Long", new[] { new DialogueLine("AI", "still playing", 10f) });
+            var completed = false;
+            session.Dialogue.Play(sequence, () => completed = true);
+            Assert.That(session.Dialogue.IsPlaying, Is.True);
+
+            session.ReturnToTitle();
+            yield return null;
+            yield return null;
+
+            Assert.That(session.Dialogue.IsPlaying, Is.False);
+            Assert.That(completed, Is.False);
+            Object.DestroyImmediate(sequence);
+        }
     }
 }

@@ -2,7 +2,8 @@
   "name": "PetOffline.Gameplay",
   "rootNamespace": "PetOffline.Gameplay",
   "references": [
-    "PetOffline.Core"
+    "PetOffline.Core",
+    "Unity.InputSystem"
   ],
   "autoReferenced": true
 }

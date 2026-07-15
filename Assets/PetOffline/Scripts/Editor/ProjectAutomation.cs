@@ -129,6 +129,7 @@ namespace PetOffline.Editor
             EnsureScene(SceneNames.Day1Path, () => CreateWorld(LevelId.Day1, "把主人拖鞋叼到摄像头A前", "CM_Day1"));
             EnsureScene(SceneNames.Day2Path, () => CreateWorld(LevelId.Day2, "让拿铁晒满20秒太阳", "CM_Day2"));
             EnsureScene(SceneNames.UIRootTestPath, () => CreateUiRootTest(input));
+            EnsureDayTwoRuntime();
 
             var required = new[]
             {
@@ -143,7 +144,29 @@ namespace PetOffline.Editor
                 .ToArray();
             EditorBuildSettings.AddConfigObject("com.unity.input.settings.actions", input, true);
 
-            EditorSceneManager.OpenScene(SceneNames.BootstrapPath, OpenSceneMode.Single);
+            var bootstrap = EditorSceneManager.OpenScene(SceneNames.BootstrapPath, OpenSceneMode.Single);
+            RefreshBootstrapReferences(input);
+            EditorSceneManager.MarkSceneDirty(bootstrap);
+            EditorSceneManager.SaveScene(bootstrap);
+        }
+
+        static void RefreshBootstrapReferences(InputActionAsset input)
+        {
+            var gameSession = UnityEngine.Object.FindObjectsByType<GameSession>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None).FirstOrDefault();
+            var sceneFlow = UnityEngine.Object.FindObjectsByType<SceneFlowService>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None).FirstOrDefault();
+            var inputRouter = UnityEngine.Object.FindObjectsByType<InputRouter>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None).FirstOrDefault();
+            var save = UnityEngine.Object.FindObjectsByType<SaveService>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None).FirstOrDefault();
+            var dialogue = UnityEngine.Object.FindObjectsByType<DialogueDirector>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None).FirstOrDefault();
+            if (gameSession == null || sceneFlow == null || inputRouter == null || save == null || dialogue == null)
+                throw new InvalidOperationException("Bootstrap services are incomplete.");
+
+            inputRouter.Configure(input);
+            gameSession.Configure(sceneFlow, save, inputRouter, dialogue);
         }
 
         static void EnsureScene(string path, Action create)
@@ -156,6 +179,43 @@ namespace PetOffline.Editor
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), path);
         }
 
+        static void EnsureDayTwoRuntime()
+        {
+            var scene = EditorSceneManager.OpenScene(SceneNames.Day2Path, OpenSceneMode.Single);
+            var context = scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<LevelSceneContext>(true))
+                .SingleOrDefault();
+            if (context == null)
+                throw new InvalidOperationException("Day 2 must contain exactly one LevelSceneContext.");
+
+            var changed = false;
+            var dayTwo = context.GetComponent<LevelTwoFlowController>();
+            foreach (var flow in context.GetComponents<LevelFlowController>())
+            {
+                if (flow == dayTwo)
+                    continue;
+                UnityEngine.Object.DestroyImmediate(flow);
+                changed = true;
+            }
+
+            if (dayTwo == null)
+            {
+                dayTwo = context.gameObject.AddComponent<LevelTwoFlowController>();
+                changed = true;
+            }
+
+            if (dayTwo.Context != context)
+            {
+                dayTwo.Configure(context);
+                changed = true;
+            }
+
+            if (!changed)
+                return;
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
         static void CreateBootstrap(InputActionAsset input)
         {
             var app = new GameObject("App");
@@ -164,10 +224,10 @@ namespace PetOffline.Editor
             var inputRouter = CreateComponentChild<InputRouter>(app.transform, "InputRouter");
             var audio = CreateComponentChild<AudioService>(app.transform, "AudioService");
             var save = CreateComponentChild<SaveService>(app.transform, "SaveService");
-            CreateComponentChild<DialogueDirector>(app.transform, "DialogueDirector");
+            var dialogue = CreateComponentChild<DialogueDirector>(app.transform, "DialogueDirector");
             inputRouter.Configure(input);
             audio.SetMasterVolume(save.MasterVolume);
-            gameSession.Configure(sceneFlow, save, inputRouter);
+            gameSession.Configure(sceneFlow, save, inputRouter, dialogue);
 
             var cameras = new GameObject("Cameras");
             var mainCamera = new GameObject("Main Camera");
@@ -198,7 +258,9 @@ namespace PetOffline.Editor
             var flowRoot = CreateChild(root.transform, "LevelFlow");
             var context = flowRoot.AddComponent<LevelSceneContext>();
             context.Configure(level, objective);
-            var flow = flowRoot.AddComponent<LevelFlowController>();
+            LevelFlowController flow = level == LevelId.Day2
+                ? flowRoot.AddComponent<LevelTwoFlowController>()
+                : flowRoot.AddComponent<LevelFlowController>();
             flow.Configure(context);
 
             var virtualCameraRoot = CreateChild(root.transform, "VirtualCamera");

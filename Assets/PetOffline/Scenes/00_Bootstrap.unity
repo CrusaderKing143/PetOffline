@@ -720,6 +720,7 @@ MonoBehaviour:
   sceneFlow: {fileID: 592737514}
   saveService: {fileID: 179819737}
   inputRouter: {fileID: 1249028708}
+  dialogueDirector: {fileID: 1718983954}
 --- !u!4 &1770254481
 Transform:
   m_ObjectHideFlags: 0

@@ -57,7 +57,13 @@ namespace PetOffline.Core
         string Objective { get; }
         float Progress01 { get; }
         CameraUiState CameraState { get; }
+        ReportDefinitionSO Report { get; }
         event Action Changed;
+    }
+
+    public interface ILevelRuntime
+    {
+        void Bind(GameSession session);
     }
 
     public interface ICommandSink

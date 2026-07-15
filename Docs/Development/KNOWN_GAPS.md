@@ -9,16 +9,16 @@
 | 缺少 03_LatestDesignSource.pdf | 无法核对晚期第一/第二关程序需求原文 | 以 AGENTS、02、01 和 Web 参考依次裁决；补齐后重审 |
 | 缺少 05_ArtSource.mg | 无法提取正式分层美术 | 使用可替换灰盒，不伪造源资产 |
 | 53 张 PNG 基本无透明通道 | 不能直接作为透明角色/道具 Sprite | 只作布局和视觉参考，后续重切或正式导出 |
-| 03 Web 尚未在浏览器完整实玩记录 | 细节提示/时序可能仍需校准 | 已完成 HTML/JS 静态核对；当前无可用浏览器后端，恢复后补跑且不复制 Canvas 架构 |
+| 03 Web 尚未完整实玩到双结局 | Day 2 节奏和结局表现仍需补充核对 | 已通过本地 HTTP 实跑 Title→Day 1、拾鞋与 Boss Call；完整脚本已静态审计，后续补跑仍不得复制 Canvas 架构 |
 | 正式音频、字体授权和动画源未验收 | Milestone 4 表现存在不确定性 | 使用离线、可替换、许可清晰的占位资源 |
 
 ## 工程状态
 
 | Gap | 影响 | 完成证据要求 |
 | --- | --- | --- |
-| Day 1 未实现/未测试 | 无法完成第一关 | 对应 PlayMode 测试和截图 |
+| Day 1 只有功能灰盒，未做生产 UI/美术人工体验 | 规则已验证，但视觉和 12–15 分钟节奏尚未验收 | Milestone 3/4 接入生产 UGUI/美术后做首次玩家与截图验收 |
 | Day 2 未实现/未测试 | 无法完成确认循环和结局 | 对应 PlayMode 测试和截图 |
-| UIRoot_Test 仅有 Foundation Mock Host，UIRoot Disabled P0 尚未实现 | 完整架构独立性未证明 | Mock Preview 与 Day 1/Day 2 断电 PlayMode 通过 |
+| UIRoot Disabled 仅完成 Day 1；Day 2 断电链路未实现 | 完整两关架构独立性尚未证明 | Milestone 2 增加 Day 2 Sun/Robot/Camera/Choice 断电 PlayMode |
 | Windows x64 Build 未生成/启动 | 无 standalone 交付 | PetOffline.exe、Player.log、Smoke 结果 |
 | Artifacts/Screenshots 尚未生成 | 无视觉验收证据 | Milestone 4/5 保存关键状态截图 |
 | README 尚未按最终项目更新 | 用户无法复现运行/测试/构建 | 控制、设置、测试、构建和已知限制齐全 |

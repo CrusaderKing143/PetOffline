@@ -19,6 +19,7 @@ namespace PetOffline.UI
         InputActionReference cancelReference;
 
         public ILevelViewModel Model => model;
+        public ICommandSink Commands => session;
         public bool WaitingForLevel => model == null;
 
         public void Configure(GameSession owner, InputActionAsset inputActions, InputSystemUIInputModule module)

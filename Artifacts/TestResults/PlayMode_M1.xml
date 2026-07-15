@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="11" result="Passed" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.7925278">
+  <test-suite type="TestSuite" id="1021" name="Pet Offline" fullname="Pet Offline" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.792528" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1014" name="PetOffline.Tests.PlayMode.dll" fullname="D:/UGit/PetOffline/Library/ScriptAssemblies/PetOffline.Tests.PlayMode.dll" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.782269" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="13976" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1015" name="PetOffline" fullname="PetOffline" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.781558" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1016" name="Tests" fullname="PetOffline.Tests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.781177" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1017" name="PlayMode" fullname="PetOffline.Tests.PlayMode" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:33Z" duration="3.780782" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="BootstrapSceneTests" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:30Z" duration="1.221590" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="BootstrapLoadsWithPersistentServicesAndNoWorld" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.BootstrapLoadsWithPersistentServicesAndNoWorld" methodname="BootstrapLoadsWithPersistentServicesAndNoWorld" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="1422484964" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:29Z" duration="0.315563" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" methodname="ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="765085347" result="Passed" start-time="2026-07-15 07:10:29Z" end-time="2026-07-15 07:10:30Z" duration="0.315877" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1005" name="ReturningToTitleStopsPersistentDialogueWithoutCompletingIt" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.ReturningToTitleStopsPersistentDialogueWithoutCompletingIt" methodname="ReturningToTitleStopsPersistentDialogueWithoutCompletingIt" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="1214902157" result="Passed" start-time="2026-07-15 07:10:30Z" end-time="2026-07-15 07:10:30Z" duration="0.289429" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1003" name="UIRootTestBindsMockWithoutWorldScene" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.UIRootTestBindsMockWithoutWorldScene" methodname="UIRootTestBindsMockWithoutWorldScene" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="2126551340" result="Passed" start-time="2026-07-15 07:10:30Z" end-time="2026-07-15 07:10:30Z" duration="0.287767" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1006" name="DayOneFlowTests" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-07-15 07:10:30Z" end-time="2026-07-15 07:10:33Z" duration="2.557799" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1012" name="BossCallSuccessCreatesSafetyAndTimeoutCreatesAlertWithoutFailure" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.BossCallSuccessCreatesSafetyAndTimeoutCreatesAlertWithoutFailure" methodname="BossCallSuccessCreatesSafetyAndTimeoutCreatesAlertWithoutFailure" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="5867626" result="Passed" start-time="2026-07-15 07:10:30Z" end-time="2026-07-15 07:10:31Z" duration="0.286276" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="CameraDetectionDoesNotCancelAnActiveBossCall" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.CameraDetectionDoesNotCancelAnActiveBossCall" methodname="CameraDetectionDoesNotCancelAnActiveBossCall" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="1233918010" result="Passed" start-time="2026-07-15 07:10:31Z" end-time="2026-07-15 07:10:31Z" duration="0.278969" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="CameraDetectionResetsOnlyTheCurrentShoeTask" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.CameraDetectionResetsOnlyTheCurrentShoeTask" methodname="CameraDetectionResetsOnlyTheCurrentShoeTask" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="2109540267" result="Passed" start-time="2026-07-15 07:10:31Z" end-time="2026-07-15 07:10:31Z" duration="0.295882" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="DisabledUIRootDoesNotBlockWorldOrDayTwoTransition" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.DisabledUIRootDoesNotBlockWorldOrDayTwoTransition" methodname="DisabledUIRootDoesNotBlockWorldOrDayTwoTransition" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="842838465" result="Passed" start-time="2026-07-15 07:10:31Z" end-time="2026-07-15 07:10:32Z" duration="0.822793" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1011" name="HeavyPillowDropsOnBarkAndRobotPushesItBeforeCompletion" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.HeavyPillowDropsOnBarkAndRobotPushesItBeforeCompletion" methodname="HeavyPillowDropsOnBarkAndRobotPushesItBeforeCompletion" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="1111467239" result="Passed" start-time="2026-07-15 07:10:32Z" end-time="2026-07-15 07:10:32Z" duration="0.290302" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="PillowDetectionPreservesCompletedShoeTask" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.PillowDetectionPreservesCompletedShoeTask" methodname="PillowDetectionPreservesCompletedShoeTask" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="839496225" result="Passed" start-time="2026-07-15 07:10:32Z" end-time="2026-07-15 07:10:33Z" duration="0.297600" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="ShoeGoalRequiresTwoSeconds" fullname="PetOffline.Tests.PlayMode.DayOneFlowTests.ShoeGoalRequiresTwoSeconds" methodname="ShoeGoalRequiresTwoSeconds" classname="PetOffline.Tests.PlayMode.DayOneFlowTests" runstate="Runnable" seed="825270332" result="Passed" start-time="2026-07-15 07:10:33Z" end-time="2026-07-15 07:10:33Z" duration="0.282335" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/pc/AppData/LocalLow/DefaultCompany/Pet Offline\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

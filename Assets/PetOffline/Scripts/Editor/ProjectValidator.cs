@@ -10,6 +10,7 @@ using UnityEditor.Build;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace PetOffline.Editor
 {
@@ -61,11 +62,20 @@ namespace PetOffline.Editor
 
         public static void ValidateBatch()
         {
-            var errors = CollectErrors();
-            WriteReport(errors);
-            if (errors.Count > 0)
-                throw new BuildFailedException(string.Join(Environment.NewLine, errors));
-            Debug.Log("[PetOffline] Project validation passed.");
+            try
+            {
+                var errors = CollectErrors();
+                WriteReport(errors);
+                if (errors.Count > 0)
+                    throw new BuildFailedException(string.Join(Environment.NewLine, errors));
+                Debug.Log("[PetOffline] Project validation passed.");
+                EditorApplication.Exit(0);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                EditorApplication.Exit(1);
+            }
         }
 
         public static List<string> CollectErrors()
@@ -77,8 +87,34 @@ namespace PetOffline.Editor
             ValidateAssemblyBoundaries(errors);
             ValidateBuildSettings(errors);
             ValidateLayers(errors);
+            ValidateDayOneAssets(errors);
             ValidateScenes(errors);
             return errors;
+        }
+
+        static void ValidateDayOneAssets(List<string> errors)
+        {
+            var level = AssetDatabase.LoadAssetAtPath<LevelConfigSO>(
+                "Assets/PetOffline/Data/Levels/Level_Day1.asset");
+            if (level == null)
+            {
+                errors.Add("Missing Day 1 LevelConfigSO.");
+                return;
+            }
+
+            if (level.OpeningDialogue == null)
+                errors.Add("Day 1 LevelConfigSO is missing its opening dialogue.");
+            if (level.DayOneReport == null)
+                errors.Add("Day 1 LevelConfigSO is missing its report.");
+            if (AssetDatabase.LoadAssetAtPath<CameraScanConfigSO>(
+                    "Assets/PetOffline/Data/Cameras/Camera_Day1_B.asset") == null)
+                errors.Add("Missing Day 1 Camera B scan config.");
+            if (AssetDatabase.LoadAssetAtPath<CarryableConfigSO>(
+                    "Assets/PetOffline/Data/Carryables/Carryable_Slipper.asset") == null)
+                errors.Add("Missing Day 1 slipper carry config.");
+            if (AssetDatabase.LoadAssetAtPath<CarryableConfigSO>(
+                    "Assets/PetOffline/Data/Carryables/Carryable_Pillow.asset") == null)
+                errors.Add("Missing Day 1 pillow carry config.");
         }
 
         static void ValidateAssemblyBoundaries(List<string> errors)
@@ -193,9 +229,12 @@ namespace PetOffline.Editor
             var roots = scene.GetRootGameObjects();
             foreach (var root in roots)
             {
-                var missing = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(root);
-                if (missing > 0)
-                    errors.Add($"{scene.name}/{root.name} contains {missing} missing script(s).");
+                foreach (var transform in root.GetComponentsInChildren<Transform>(true))
+                {
+                    var missing = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(transform.gameObject);
+                    if (missing > 0)
+                        errors.Add($"{scene.name}/{GetPath(transform)} contains {missing} missing script(s).");
+                }
 
                 foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
                 {
@@ -214,22 +253,49 @@ namespace PetOffline.Editor
         static void ValidateBehaviour(Scene scene, MonoBehaviour behaviour, List<string> errors)
         {
             var type = behaviour.GetType();
-            var forbiddenBelowCanvas = ForbiddenBelowCanvas.Contains(type.Name) ||
+            var isGameplay = type.Assembly.GetName().Name == "PetOffline.Gameplay";
+            var forbiddenBelowCanvas = isGameplay || ForbiddenBelowCanvas.Contains(type.Name) ||
                                        typeof(LevelFlowController).IsAssignableFrom(type);
             if (forbiddenBelowCanvas && behaviour.GetComponentInParent<Canvas>(true) != null)
                 errors.Add($"{scene.name}/{GetPath(behaviour.transform)} places {type.Name} below a Canvas.");
 
-            if (type.Assembly.GetName().Name == "PetOffline.Gameplay" && behaviour.transform is RectTransform)
-                errors.Add($"{scene.name}/{GetPath(behaviour.transform)} is gameplay using RectTransform.");
+            if (isGameplay)
+            {
+                if (behaviour.transform is RectTransform)
+                    errors.Add($"{scene.name}/{GetPath(behaviour.transform)} is gameplay using RectTransform.");
+                if (behaviour.GetComponent<Graphic>() != null)
+                    errors.Add($"{scene.name}/{GetPath(behaviour.transform)} is gameplay using a UGUI Graphic.");
+            }
 
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (var field in GetInstanceFields(type))
             {
                 if (field.GetCustomAttribute<RequiredReferenceAttribute>() == null)
                     continue;
-                if (!typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+
+                if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+                {
+                    if (field.GetValue(behaviour) is not UnityEngine.Object reference || reference == null)
+                        errors.Add($"{scene.name}/{GetPath(behaviour.transform)} missing required reference {field.Name}.");
                     continue;
-                if (field.GetValue(behaviour) is not UnityEngine.Object reference || reference == null)
+                }
+
+                var elementType = field.FieldType.IsArray ? field.FieldType.GetElementType() : null;
+                if (elementType == null || !typeof(UnityEngine.Object).IsAssignableFrom(elementType))
+                    continue;
+                if (field.GetValue(behaviour) is not Array values || values.Length == 0 ||
+                    values.Cast<object>().Any(value => value is not UnityEngine.Object reference || reference == null))
                     errors.Add($"{scene.name}/{GetPath(behaviour.transform)} missing required reference {field.Name}.");
+            }
+        }
+
+        static IEnumerable<FieldInfo> GetInstanceFields(Type type)
+        {
+            while (type != null && type != typeof(MonoBehaviour))
+            {
+                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public |
+                                                     BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                    yield return field;
+                type = type.BaseType;
             }
         }
 
@@ -273,6 +339,56 @@ namespace PetOffline.Editor
                 if (canvas == null || canvas.renderMode != RenderMode.WorldSpace)
                     errors.Add($"{scene.name}/{GetPath(transform)} is a world object using RectTransform.");
             }
+
+            if (scene.path == SceneNames.Day1Path)
+                ValidateDayOne(worldRoot, errors);
+            else if (scene.path == SceneNames.Day2Path)
+                ValidateDayTwo(worldRoot, errors);
+        }
+
+        static void ValidateDayOne(GameObject worldRoot, List<string> errors)
+        {
+            foreach (var path in new[]
+                     {
+                         "Actors/Latte", "Interactables/OwnerSlipper", "Interactables/BossPillow",
+                         "Interactables/BananaSlipZone", "Devices/CameraA", "Devices/CameraB",
+                         "Devices/RobotVacuum", "Sensors/CameraBVision", "Triggers/CameraAGoalArea",
+                         "Triggers/DogBedGoalArea", "Paths/RobotPath_Day1"
+                     })
+                if (worldRoot.transform.Find(path) == null)
+                    errors.Add($"{SceneNames.Day1}/WorldRoot missing {path}.");
+
+            var cameraA = worldRoot.transform.Find("Devices/CameraA");
+            if (cameraA != null && cameraA.GetComponentInChildren<CameraVisionSensor2D>(true) != null)
+                errors.Add("Day 1 Camera A must be a goal camera and must not have a hostile sensor.");
+
+            var cameraBVision = worldRoot.transform.Find("Sensors/CameraBVision");
+            var cameraBSensor = cameraBVision != null
+                ? cameraBVision.GetComponent<CameraVisionSensor2D>()
+                : null;
+            if (cameraBSensor == null)
+                errors.Add("Day 1 Camera B is missing CameraVisionSensor2D.");
+            else if (cameraBVision.GetComponent<LineRenderer>() == null)
+                errors.Add("Day 1 Camera B is missing its world-space vision cone.");
+
+            var flows = worldRoot.GetComponentsInChildren<LevelFlowController>(true);
+            if (flows.Length != 1 || flows[0] is not LevelOneFlowController)
+                errors.Add("Day 1 must contain exactly one LevelOneFlowController.");
+
+            var shoeGoal = worldRoot.transform.Find("Triggers/CameraAGoalArea")?.GetComponent<CarryGoalZone2D>();
+            if (shoeGoal == null || shoeGoal.Target == null || shoeGoal.Target.name != "OwnerSlipper")
+                errors.Add("Day 1 Camera A GoalArea must target OwnerSlipper.");
+
+            var bedGoal = worldRoot.transform.Find("Triggers/DogBedGoalArea")?.GetComponent<CarryGoalZone2D>();
+            if (bedGoal == null || bedGoal.Target == null || bedGoal.Target.name != "BossPillow")
+                errors.Add("Day 1 Dog Bed GoalArea must target BossPillow.");
+        }
+
+        static void ValidateDayTwo(GameObject worldRoot, List<string> errors)
+        {
+            var flows = worldRoot.GetComponentsInChildren<LevelFlowController>(true);
+            if (flows.Length != 1 || flows[0] is not LevelTwoFlowController)
+                errors.Add("Day 2 must contain exactly one LevelTwoFlowController.");
         }
 
         static bool ContainsComponent(Scene scene, Type type)
