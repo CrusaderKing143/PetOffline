@@ -1,0 +1,17 @@
+{
+  "name": "PetOffline.Tests.EditMode",
+  "rootNamespace": "PetOffline.Tests.EditMode",
+  "references": [
+    "PetOffline.Core",
+    "PetOffline.Gameplay",
+    "PetOffline.UI",
+    "PetOffline.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

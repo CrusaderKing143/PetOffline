@@ -1,0 +1,13 @@
+{
+  "name": "PetOffline.Tests.PlayMode",
+  "rootNamespace": "PetOffline.Tests.PlayMode",
+  "references": [
+    "PetOffline.Core",
+    "PetOffline.Gameplay",
+    "PetOffline.UI"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

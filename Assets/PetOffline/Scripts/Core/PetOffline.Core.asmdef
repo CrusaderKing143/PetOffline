@@ -1,0 +1,8 @@
+{
+  "name": "PetOffline.Core",
+  "rootNamespace": "PetOffline.Core",
+  "references": [
+    "Unity.InputSystem"
+  ],
+  "autoReferenced": true
+}

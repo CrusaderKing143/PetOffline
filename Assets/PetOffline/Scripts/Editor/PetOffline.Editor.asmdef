@@ -1,0 +1,17 @@
+{
+  "name": "PetOffline.Editor",
+  "rootNamespace": "PetOffline.Editor",
+  "references": [
+    "PetOffline.Core",
+    "PetOffline.Gameplay",
+    "PetOffline.UI",
+    "Unity.Cinemachine",
+    "Unity.InputSystem",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": true
+}

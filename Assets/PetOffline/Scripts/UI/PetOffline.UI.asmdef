@@ -1,0 +1,11 @@
+{
+  "name": "PetOffline.UI",
+  "rootNamespace": "PetOffline.UI",
+  "references": [
+    "PetOffline.Core",
+    "Unity.InputSystem",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "autoReferenced": true
+}

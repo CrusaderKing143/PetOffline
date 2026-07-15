@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.8960091">
+  <test-suite type="TestSuite" id="1012" name="Pet Offline" fullname="Pet Offline" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.896009" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1005" name="PetOffline.Tests.PlayMode.dll" fullname="D:/UGit/PetOffline/Library/ScriptAssemblies/PetOffline.Tests.PlayMode.dll" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.887708" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="22416" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1006" name="PetOffline" fullname="PetOffline" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.886963" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1007" name="Tests" fullname="PetOffline.Tests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.886625" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1008" name="PlayMode" fullname="PetOffline.Tests.PlayMode" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.886247" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="BootstrapSceneTests" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.885101" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="BootstrapLoadsWithPersistentServicesAndNoWorld" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.BootstrapLoadsWithPersistentServicesAndNoWorld" methodname="BootstrapLoadsWithPersistentServicesAndNoWorld" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="974367751" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:14Z" duration="0.307308" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" methodname="ConcurrentWorldRequestsKeepOnlyOneWorldLoaded" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="2116240002" result="Passed" start-time="2026-07-15 03:21:14Z" end-time="2026-07-15 03:21:15Z" duration="0.298195" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1003" name="UIRootTestBindsMockWithoutWorldScene" fullname="PetOffline.Tests.PlayMode.BootstrapSceneTests.UIRootTestBindsMockWithoutWorldScene" methodname="UIRootTestBindsMockWithoutWorldScene" classname="PetOffline.Tests.PlayMode.BootstrapSceneTests" runstate="Runnable" seed="107166865" result="Passed" start-time="2026-07-15 03:21:15Z" end-time="2026-07-15 03:21:15Z" duration="0.267322" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/pc/AppData/LocalLow/DefaultCompany/Pet Offline\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

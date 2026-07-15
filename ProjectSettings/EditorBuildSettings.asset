@@ -6,8 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/PetOffline/Scenes/00_Bootstrap.unity
+    guid: db2553e4cca9a884697fdf3e14cf0519
+  - enabled: 1
+    path: Assets/PetOffline/Scenes/10_Day1_Meeting.unity
+    guid: 0b06e97f543cfcb42b7425390e382509
+  - enabled: 1
+    path: Assets/PetOffline/Scenes/20_Day2_Sunbath.unity
+    guid: 82e9f2fb004dc62489c11ca12dae984e
+  - enabled: 0
+    path: Assets/PetOffline/Scenes/90_UIRoot_Test.unity
+    guid: dd952a822b1acdd4486b6f0b27665faf
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3c45d0983ae8f4d478daa56b925d4955, type: 3}
   m_UseUCBPForAssetBundles: 0
