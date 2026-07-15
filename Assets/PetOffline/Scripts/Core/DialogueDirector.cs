@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PetOffline.Core
@@ -8,14 +9,38 @@ namespace PetOffline.Core
     {
         Coroutine playing;
         Action completion;
+        readonly Queue<DialogueRequest> queued = new();
+        bool completing;
 
-        public bool IsPlaying => playing != null;
+        readonly struct DialogueRequest
+        {
+            public DialogueRequest(DialogueSequenceSO sequence, Action onComplete)
+            {
+                Sequence = sequence;
+                OnComplete = onComplete;
+            }
+
+            public DialogueSequenceSO Sequence { get; }
+            public Action OnComplete { get; }
+        }
+
+        public bool IsPlaying => playing != null || completing || queued.Count > 0;
         public event Action<string, string> LineShown;
         public event Action SequenceFinished;
 
         public void Play(DialogueSequenceSO sequence, Action onComplete = null)
         {
-            Stop();
+            if (playing != null || completing || queued.Count > 0)
+            {
+                queued.Enqueue(new DialogueRequest(sequence, onComplete));
+                return;
+            }
+
+            StartSequence(sequence, onComplete);
+        }
+
+        void StartSequence(DialogueSequenceSO sequence, Action onComplete)
+        {
             completion = onComplete;
             if (sequence == null || sequence.Lines.Count == 0)
             {
@@ -60,14 +85,22 @@ namespace PetOffline.Core
                 StopCoroutine(playing);
             playing = null;
             completion = null;
+            queued.Clear();
+            completing = false;
         }
 
         void CompleteSequence()
         {
             var callback = completion;
             completion = null;
+            completing = true;
             SequenceFinished?.Invoke();
             callback?.Invoke();
+            completing = false;
+            if (playing != null || queued.Count == 0)
+                return;
+            var next = queued.Dequeue();
+            StartSequence(next.Sequence, next.OnComplete);
         }
 
         void OnDisable() => Stop();

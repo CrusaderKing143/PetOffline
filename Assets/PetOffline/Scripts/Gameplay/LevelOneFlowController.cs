@@ -18,6 +18,7 @@ namespace PetOffline.Gameplay
         [SerializeField, RequiredReference] CarryGoalZone2D cameraAGoal;
         [SerializeField, RequiredReference] CarryGoalZone2D dogBedGoal;
         [SerializeField, RequiredReference] CameraVisionSensor2D cameraB;
+        [SerializeField, RequiredReference] RobotPatrol robot;
         [SerializeField, RequiredReference] Transform playerSpawn;
         [SerializeField, RequiredReference] Transform pillowRetrySpawn;
         [SerializeField, RequiredReference] Transform endingSpeakerPoint;
@@ -62,6 +63,7 @@ namespace PetOffline.Gameplay
             CarryGoalZone2D shoeGoal,
             CarryGoalZone2D pillowGoal,
             CameraVisionSensor2D hostileCamera,
+            RobotPatrol cleaningRobot,
             Transform latteSpawn,
             Transform pillowRetry,
             Transform speakerPoint,
@@ -77,6 +79,7 @@ namespace PetOffline.Gameplay
             cameraAGoal = shoeGoal;
             dogBedGoal = pillowGoal;
             cameraB = hostileCamera;
+            robot = cleaningRobot;
             playerSpawn = latteSpawn;
             pillowRetrySpawn = pillowRetry;
             endingSpeakerPoint = speakerPoint;
@@ -167,6 +170,13 @@ namespace PetOffline.Gameplay
                 cameraB.SetSensorActive(true);
                 cameraB.ResetScan();
             }
+            if (robot != null)
+            {
+                robot.ResetPatrol();
+                robot.SetPatrolEnabled(true);
+                if (robot.Collider != null)
+                    robot.Collider.enabled = true;
+            }
 
             if (player != null)
             {
@@ -206,7 +216,10 @@ namespace PetOffline.Gameplay
             }
 
             if (phase == LevelPhase.FinalBark)
+            {
+                session?.Dialogue?.ShowLine("AI", "置信度：12%。");
                 EnterReport();
+            }
         }
 
         void EnterShoesTask()
@@ -237,6 +250,10 @@ namespace PetOffline.Gameplay
             pillow?.SetAvailable(false);
             CancelBossCall();
             ClearCameraWindows();
+            cameraB?.SetSensorActive(false);
+            robot?.SetPatrolEnabled(false);
+            if (robot?.Collider != null)
+                robot.Collider.enabled = false;
             SetPhase(LevelPhase.FinalBark);
         }
 

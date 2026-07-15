@@ -1,3 +1,4 @@
+using System;
 using PetOffline.Core;
 using UnityEngine;
 
@@ -31,6 +32,19 @@ namespace PetOffline.Gameplay
         [SerializeField, Min(0f)] float endingSpeakerWaitSeconds = 1.5f;
         [SerializeField, Min(0f)] float endingBedWaitSeconds = 1f;
 
+        [Header("Day 2 Content")]
+        [SerializeField] ReportDefinitionSO dayTwoReport;
+        [SerializeField] DialogueSequenceSO[] dayTwoDialogues = Array.Empty<DialogueSequenceSO>();
+        [SerializeField] string dayTwoObjective = "让拿铁晒满20秒太阳";
+
+        [Header("Day 2 Timing")]
+        [SerializeField, Min(0.01f)] float sunTargetSeconds = 20f;
+        [SerializeField, Min(0.01f)] float confirmationSeconds = 10f;
+        [SerializeField, Min(0f)] float confirmationIgnoreDelay = 9f;
+        [SerializeField, Min(0f)] float confirmationAlertSeconds = 7.2f;
+        [SerializeField, Min(0.01f)] float robotSlipSpeed = 4.6f;
+        [SerializeField, Min(0.01f)] float robotSlipDuration = 1.35f;
+
         public DialogueSequenceSO OpeningDialogue => openingDialogue;
         public ReportDefinitionSO DayOneReport => dayOneReport;
         public string OpeningObjective => openingObjective;
@@ -50,6 +64,25 @@ namespace PetOffline.Gameplay
         public float EndingMoveSpeed => endingMoveSpeed;
         public float EndingSpeakerWaitSeconds => endingSpeakerWaitSeconds;
         public float EndingBedWaitSeconds => endingBedWaitSeconds;
+        public ReportDefinitionSO DayTwoReport => dayTwoReport;
+        public string DayTwoObjective => dayTwoObjective;
+        public float SunTargetSeconds => sunTargetSeconds;
+        public float ConfirmationSeconds => confirmationSeconds;
+        public float ConfirmationIgnoreDelay => confirmationIgnoreDelay;
+        public float ConfirmationAlertSeconds => confirmationAlertSeconds;
+        public float RobotSlipSpeed => robotSlipSpeed;
+        public float RobotSlipDuration => robotSlipDuration;
+
+        public DialogueSequenceSO DayTwoDialogue(string sequenceId)
+        {
+            if (string.IsNullOrEmpty(sequenceId) || dayTwoDialogues == null)
+                return null;
+            for (var i = 0; i < dayTwoDialogues.Length; i++)
+                if (dayTwoDialogues[i] != null &&
+                    string.Equals(dayTwoDialogues[i].SequenceId, sequenceId, StringComparison.Ordinal))
+                    return dayTwoDialogues[i];
+            return null;
+        }
 
         public void ConfigureObjectives(string opening, string shoes, string pillow, string finalBark)
         {
@@ -95,6 +128,28 @@ namespace PetOffline.Gameplay
             endingMoveSpeed = Mathf.Max(0.01f, endingSpeed);
             endingSpeakerWaitSeconds = Mathf.Max(0f, speakerWaitSeconds);
             endingBedWaitSeconds = Mathf.Max(0f, bedWaitSeconds);
+        }
+
+        public void ConfigureDayTwo(
+            ReportDefinitionSO report,
+            DialogueSequenceSO[] dialogues,
+            float targetSeconds = 20f,
+            float confirmSeconds = 10f,
+            float ignoreDelay = 9f,
+            float alertSeconds = 7.2f,
+            float slipSpeed = 4.6f,
+            float slipSeconds = 1.35f,
+            string objective = "让拿铁晒满20秒太阳")
+        {
+            dayTwoReport = report;
+            dayTwoDialogues = dialogues ?? Array.Empty<DialogueSequenceSO>();
+            sunTargetSeconds = Mathf.Max(0.01f, targetSeconds);
+            confirmationSeconds = Mathf.Clamp(confirmSeconds, 0.01f, sunTargetSeconds);
+            confirmationIgnoreDelay = Mathf.Max(0f, ignoreDelay);
+            confirmationAlertSeconds = Mathf.Max(0f, alertSeconds);
+            robotSlipSpeed = Mathf.Max(0.01f, slipSpeed);
+            robotSlipDuration = Mathf.Max(0.01f, slipSeconds);
+            dayTwoObjective = objective ?? string.Empty;
         }
     }
 }

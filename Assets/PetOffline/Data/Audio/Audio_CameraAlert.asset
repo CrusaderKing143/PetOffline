@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9faaf9a27db6ba448981744b7caad524, type: 3}
+  m_Name: Audio_CameraAlert
+  m_EditorClassIdentifier: PetOffline.Core::PetOffline.Core.AudioCueDefinitionSO
+  cueId: CameraAlert
+  clip: {fileID: 8300000, guid: ccca66e6e554c034791cf7064223e50d, type: 3}
+  bus: 0
+  volume: 0.45
+  pitch: 1
+  spatialBlend: 0.85
+  loop: 0
+  maxDistance: 14
+  playWhenPaused: 0

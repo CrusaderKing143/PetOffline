@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c3db162d4f74934a91f8efc08c799be, type: 3}
+  m_Name: Dialogue_D2_BackupConfirm
+  m_EditorClassIdentifier: PetOffline.Core::PetOffline.Core.DialogueSequenceSO
+  sequenceId: D2.BackupConfirm
+  pauseGameplay: 0
+  skippable: 1
+  completionEventId: D2.BackupConfirm.Complete
+  lines:
+  - speakerId: AI
+    text: "\u53C8\u6709\u5341\u79D2\u6CA1\u770B\u5230\u5B83\u4E86\u3002\u4FA7\u95E8\u6444\u50CF\u5934\u63A5\u7BA1\u786E\u8BA4\u3002"
+    duration: 2
+  - speakerId: Owner
+    text: "\u2026\u2026\u4E0D\u662F\u5DF2\u7ECF\u649E\u574F\u4E00\u4E2A\u4E86\u5417\uFF1F"
+    duration: 1.8
+  - speakerId: AI
+    text: "\u5907\u7528\u6444\u50CF\u5934\u4F1A\u5B88\u4F4F\u4FA7\u95E8\u3002\u8BF7\u4ECE\u5BA2\u5385\u4E0B\u65B9\u7ED5\u56DE\u9633\u53F0\u3002"
+    duration: 2.2

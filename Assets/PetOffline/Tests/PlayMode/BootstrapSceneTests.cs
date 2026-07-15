@@ -86,5 +86,31 @@ namespace PetOffline.Tests.PlayMode
             Assert.That(completed, Is.False);
             Object.DestroyImmediate(sequence);
         }
+
+        [UnityTest]
+        public IEnumerator DialogueDirectorQueuesSequencesWithoutDroppingCompletionCallbacks()
+        {
+            var owner = new GameObject("DialogueQueueTest");
+            var director = owner.AddComponent<DialogueDirector>();
+            var first = ScriptableObject.CreateInstance<DialogueSequenceSO>();
+            var second = ScriptableObject.CreateInstance<DialogueSequenceSO>();
+            first.Configure("Test.First", new[] { new DialogueLine("AI", "first", 10f) });
+            second.Configure("Test.Second", new[] { new DialogueLine("AI", "second", 10f) });
+            var order = string.Empty;
+
+            director.Play(first, () => order += "A");
+            director.Play(second, () => order += "B");
+            director.FinishSequence();
+            Assert.That(order, Is.EqualTo("A"));
+            Assert.That(director.IsPlaying, Is.True);
+            director.FinishSequence();
+            Assert.That(order, Is.EqualTo("AB"));
+            Assert.That(director.IsPlaying, Is.False);
+
+            Object.DestroyImmediate(first);
+            Object.DestroyImmediate(second);
+            Object.DestroyImmediate(owner);
+            yield return null;
+        }
     }
 }

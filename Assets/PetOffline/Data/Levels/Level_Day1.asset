@@ -32,3 +32,12 @@ MonoBehaviour:
   endingMoveSpeed: 3
   endingSpeakerWaitSeconds: 1.5
   endingBedWaitSeconds: 1
+  dayTwoReport: {fileID: 0}
+  dayTwoDialogues: []
+  dayTwoObjective: "\u8BA9\u62FF\u94C1\u6652\u6EE120\u79D2\u592A\u9633"
+  sunTargetSeconds: 20
+  confirmationSeconds: 10
+  confirmationIgnoreDelay: 9
+  confirmationAlertSeconds: 7.2
+  robotSlipSpeed: 4.6
+  robotSlipDuration: 1.35

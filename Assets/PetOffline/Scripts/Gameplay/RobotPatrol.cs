@@ -1,3 +1,4 @@
+using System;
 using PetOffline.Core;
 using UnityEngine;
 
@@ -14,12 +15,22 @@ namespace PetOffline.Gameplay
         [SerializeField, Min(0.01f)] float speed = 1.22f;
 
         Vector2 startPosition;
+        Vector2 slipDestination;
+        float slipSpeed;
+        float slipRemaining;
+        bool patrolBeforeSlip;
+        bool slipping;
         bool patrolEnabled = true;
 
         public int CurrentWaypointIndex { get; private set; }
         public bool PatrolEnabled => patrolEnabled;
+        public bool IsSlipping => slipping;
+        public Vector2 SlipDestination => slipDestination;
         public Rigidbody2D Body => body;
-        public event System.Action<CarryableObject> CarryablePushed;
+        public Collider2D Collider => robotCollider;
+        public event Action<CarryableObject> CarryablePushed;
+        public event Action<Collider2D> Contacted;
+        public event Action SlipCompleted;
 
         public void Configure(
             Rigidbody2D rigidbody2D,
@@ -38,6 +49,7 @@ namespace PetOffline.Gameplay
                 body.gravityScale = 0f;
                 body.constraints |= RigidbodyConstraints2D.FreezeRotation;
                 body.bodyType = RigidbodyType2D.Kinematic;
+                body.useFullKinematicContacts = true;
                 startPosition = body.position;
             }
         }
@@ -46,6 +58,7 @@ namespace PetOffline.Gameplay
 
         public void ResetPatrol()
         {
+            StopSlip(false);
             CurrentWaypointIndex = 0;
             if (body != null)
             {
@@ -56,7 +69,23 @@ namespace PetOffline.Gameplay
 
         public void Tick(float deltaTime)
         {
-            if (!patrolEnabled || body == null || waypoints == null || waypoints.Length == 0 || deltaTime <= 0f)
+            if (body == null || deltaTime <= 0f)
+                return;
+
+            if (IsSlipping)
+            {
+                if (slipRemaining <= 0f)
+                {
+                    StopSlip();
+                    return;
+                }
+                var slipNext = Vector2.MoveTowards(body.position, slipDestination, slipSpeed * deltaTime);
+                body.MovePosition(slipNext);
+                slipRemaining -= deltaTime;
+                return;
+            }
+
+            if (!patrolEnabled || waypoints == null || waypoints.Length == 0)
                 return;
 
             var waypoint = waypoints[CurrentWaypointIndex];
@@ -72,6 +101,36 @@ namespace PetOffline.Gameplay
                 CurrentWaypointIndex = (CurrentWaypointIndex + 1) % waypoints.Length;
         }
 
+        public void BeginSlip(Vector2 destination, float moveSpeed, float duration)
+        {
+            if (body == null)
+                return;
+
+            if (!IsSlipping)
+                patrolBeforeSlip = patrolEnabled;
+            slipping = true;
+            patrolEnabled = false;
+            slipDestination = destination;
+            slipSpeed = Mathf.Max(0.01f, moveSpeed);
+            slipRemaining = Mathf.Max(0.01f, duration);
+            body.linearVelocity = Vector2.zero;
+        }
+
+        public void StopSlip() => StopSlip(true);
+
+        void StopSlip(bool notify)
+        {
+            var wasSlipping = IsSlipping;
+            slipping = false;
+            slipRemaining = 0f;
+            if (body != null)
+                body.linearVelocity = Vector2.zero;
+            if (wasSlipping)
+                patrolEnabled = patrolBeforeSlip;
+            if (notify && wasSlipping)
+                SlipCompleted?.Invoke();
+        }
+
         public bool TryPush(Collider2D other)
         {
             var carryable = other != null ? other.GetComponentInParent<CarryableObject>() : null;
@@ -82,8 +141,16 @@ namespace PetOffline.Gameplay
             return true;
         }
 
-        void OnCollisionEnter2D(Collision2D collision) => TryPush(collision.collider);
-        void OnTriggerEnter2D(Collider2D other) => TryPush(other);
+        void HandleContact(Collider2D other)
+        {
+            if (other == null)
+                return;
+            Contacted?.Invoke(other);
+            TryPush(other);
+        }
+
+        void OnCollisionEnter2D(Collision2D collision) => HandleContact(collision.collider);
+        void OnTriggerEnter2D(Collider2D other) => HandleContact(other);
         void FixedUpdate() => Tick(Time.fixedDeltaTime);
 
         void Awake()

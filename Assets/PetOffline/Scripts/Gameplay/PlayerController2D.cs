@@ -95,6 +95,12 @@ namespace PetOffline.Gameplay
                 Barked?.Invoke();
         }
 
+        public void Push()
+        {
+            if (inputEnabled && movementEnabled && !IsSliding)
+                PushPressed?.Invoke();
+        }
+
         public void Slide(Vector2 direction, float speedMultiplier, float duration)
         {
             if (IsSliding)
@@ -123,13 +129,17 @@ namespace PetOffline.Gameplay
                 transform.position = worldPosition;
         }
 
-        public bool MoveTowards(Vector2 worldPosition, float speed)
+        public bool MoveTowards(Vector2 worldPosition, float speed) =>
+            MoveTowards(worldPosition, speed, Time.fixedDeltaTime);
+
+        public bool MoveTowards(Vector2 worldPosition, float speed, float deltaTime)
         {
             if (body == null)
                 return true;
 
             StopBody();
-            var next = Vector2.MoveTowards(body.position, worldPosition, Mathf.Max(0f, speed) * Time.fixedDeltaTime);
+            var next = Vector2.MoveTowards(body.position, worldPosition,
+                Mathf.Max(0f, speed) * Mathf.Max(0f, deltaTime));
             body.MovePosition(next);
             var delta = worldPosition - next;
             if (delta.sqrMagnitude > 0.0001f)
@@ -155,8 +165,8 @@ namespace PetOffline.Gameplay
                 InteractPressed?.Invoke();
             if (barkAction != null && barkAction.WasPressedThisFrame())
                 Bark();
-            if (movementEnabled && !IsSliding && pushAction != null && pushAction.WasPressedThisFrame())
-                PushPressed?.Invoke();
+            if (pushAction != null && pushAction.WasPressedThisFrame())
+                Push();
         }
 
         void FixedUpdate()
@@ -178,7 +188,7 @@ namespace PetOffline.Gameplay
                 : Vector2.zero;
         }
 
-        void SetLying(bool value)
+        public void SetLying(bool value)
         {
             if (lying == value)
                 return;

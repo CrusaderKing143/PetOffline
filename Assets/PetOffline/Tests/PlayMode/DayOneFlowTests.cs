@@ -155,6 +155,62 @@ namespace PetOffline.Tests.PlayMode
         }
 
         [Test]
+        public void PushMovesOnlyAnAvailableDroppedPillowWhileGameplayIsEnabled()
+        {
+            var start = new Vector2(2.8f, 1.6f);
+            player.ResetTo(new Vector2(2.1f, 1.6f));
+            pillow.ResetTo(start);
+            Physics2D.SyncTransforms();
+
+            Assert.That(pillow.IsAvailable, Is.False);
+            player.Push();
+            Assert.That(pillow.Body.position, Is.EqualTo(start));
+
+            CompleteShoes();
+            Assert.That(pillow.IsAvailable, Is.True);
+
+            carry.SetInteractionEnabled(false);
+            player.Push();
+            Assert.That(pillow.Body.position, Is.EqualTo(start));
+            carry.SetInteractionEnabled(true);
+
+            Assert.That(carry.TryPickup(pillow), Is.True);
+            player.Push();
+            Assert.That(carry.Held, Is.EqualTo(pillow));
+            carry.ForceDrop(start);
+
+            player.SetMovementEnabled(false);
+            player.Push();
+            Assert.That(pillow.Body.position, Is.EqualTo(start));
+            player.SetMovementEnabled(true);
+
+            Physics2D.SyncTransforms();
+            var before = pillow.Body.position;
+
+            player.Push();
+
+            Assert.That(pillow.Config.RobotPushDistance, Is.GreaterThan(0f));
+            Assert.That(Vector2.Distance(before, pillow.Body.position),
+                Is.EqualTo(pillow.Config.RobotPushDistance).Within(0.01f));
+        }
+
+        [UnityTest]
+        public IEnumerator DroppingAtTheOuterWallKeepsTheMissionItemInsideTheApartment()
+        {
+            Assert.That(carry.TryPickup(slipper), Is.True);
+            player.ResetTo(new Vector2(-4f, -4.55f));
+            Physics2D.SyncTransforms();
+
+            carry.DropHeld();
+            Physics2D.SyncTransforms();
+            yield return new WaitForFixedUpdate();
+
+            Assert.That(carry.Held, Is.Null);
+            Assert.That(slipper.Body.position.y, Is.GreaterThan(-4.9f));
+            Assert.That(Vector2.Distance(slipper.Body.position, player.Position), Is.LessThanOrEqualTo(0.7f));
+        }
+
+        [Test]
         public void BossCallSuccessCreatesSafetyAndTimeoutCreatesAlertWithoutFailure()
         {
             flow.Tick(14.01f);
@@ -182,6 +238,34 @@ namespace PetOffline.Tests.PlayMode
             flow.Tick(7.21f);
             Assert.That(flow.AlertActive, Is.False);
             Assert.That(cameraB.IsAlert, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator AutomaticEndingWalksToTheSpeakerAndBedWithoutTeleporting()
+        {
+            CompleteShoes();
+            pillow.ResetTo(bedGoal.transform.position);
+            bedGoal.NotifyEnter(pillow);
+            player.Bark();
+            Assert.That(flow.Phase, Is.EqualTo(LevelPhase.Report));
+            var speakerPoint = GameObject.Find("WorldRoot/Triggers/EndingSpeakerPoint").transform;
+            var bedPoint = GameObject.Find("WorldRoot/Triggers/EndingBedPoint").transform;
+            var minimumSpeakerDistance = float.PositiveInfinity;
+            Time.timeScale = 20f;
+
+            flow.ContinueReport();
+            for (var i = 0; i < 800 && flow.Phase != LevelPhase.Complete; i++)
+            {
+                minimumSpeakerDistance = Mathf.Min(minimumSpeakerDistance,
+                    Vector2.Distance(player.Position, speakerPoint.position));
+                yield return new WaitForFixedUpdate();
+            }
+
+            Assert.That(flow.Phase, Is.EqualTo(LevelPhase.Complete));
+            Assert.That(minimumSpeakerDistance, Is.LessThan(0.08f));
+            Assert.That(Vector2.Distance(player.Position, bedPoint.position), Is.LessThan(0.02f));
+            Assert.That(robot.PatrolEnabled, Is.False);
+            Assert.That(robot.Collider.enabled, Is.False);
         }
 
         [UnityTest]

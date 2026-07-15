@@ -1,99 +1,98 @@
 # Pet Offline Test Report
 
-更新日期：2026-07-15
+更新日期：2026-07-15 23:30（UTC+8）
 
-报告状态：Milestone 0 Foundation 与 Milestone 1 Day 1 已执行真实 Unity 测试。
+结论：当前工作树的架构校验、全部 EditMode/PlayMode、Windows Player 双结局冒烟、跨进程 Continue、Development/Release 构建和 Release 启动均通过。最终 XML 均为 `Passed` 且 `Failed=0`；最终日志未发现编译错误、Missing Script、MissingReference 或运行时异常。
 
-结论：Day 1 功能灰盒、架构边界和 Day 1 UIRoot 断电链路通过；Day 2、生产 UI、完整 Smoke 与 Build 尚未通过。
+最终 Editor 回归时间为 23:20–23:22，晚于 `FullTitleToEndingSmokeTests.cs` 的 22:47 最后修改，因此本报告不沿用修改前的普通全量测试结果。
 
 ## 环境
 
-| 项目 | 结果 | 证据 |
-| --- | --- | --- |
-| ProjectVersion | PASS | Unity 6000.3.14f1 (d68c3f99a318) |
-| Unity Editor | PASS | `C:\Program Files\Unity 6000.3.14f1\Editor\Unity.exe` |
-| 运行方式 | PASS | PetOffline 无锁时使用 batchmode；未使用指向其他项目的全局 Unity MCP |
-| 编译 | PASS | 最终 Setup/EditMode/PlayMode/Validation 日志无 `error CS` |
+| 项目 | 值 |
+| --- | --- |
+| Unity | `6000.3.14f1` |
+| OS / Target | Windows x64 / StandaloneWindows64 |
+| Scripting Backend | Mono x64（本机未安装 Windows IL2CPP variation） |
+| Renderer | URP 2D |
+| Input | Unity Input System |
+| 测试日期 | 2026-07-15（UTC+8） |
 
-## Milestone 1 实际命令
+## 最终结果
 
-```powershell
-Unity.exe -batchmode -nographics -quit -projectPath D:\UGit\PetOffline `
-  -executeMethod PetOffline.Editor.DayOneAutomation.SetupDayOneBatch
+| 运行 | 结果 | 数量/构建摘要 | 证据 |
+| --- | --- | --- | --- |
+| Project Validator | PASS | 四场景、边界、引用、Build Settings、必需资产 | `ValidationReport.txt`、`Validation_Final.log` |
+| EditMode | PASS | 3/3 | `EditMode_Final.xml`、`EditMode_Final.log` |
+| PlayMode | PASS | 33/33 | `PlayMode_Final.xml`、`PlayMode_Final.log` |
+| Standalone 双结局/截图 | PASS | 2/2 | `StandalonePlayMode_Screenshots_Final.xml`、对应 Player/Editor log |
+| 跨进程 Seed | PASS | 1/1 | `Standalone_CrossProcess_Seed.xml` |
+| 下一进程 Continue | PASS | 1/1 | `Standalone_CrossProcess_Continue.xml` |
+| Development Build | PASS | 192,566,482 bytes；0 error / 0 warning | `WindowsBuild_Development.txt`、`BuildDevelopment_Final.log` |
+| Release Build | PASS | 126,796,871 bytes；0 error / 0 warning | `WindowsBuild_Release.txt`、`BuildRelease_Final.log` |
+| Release launch smoke | PASS | 窗口响应正常，D3D11 启动，无异常 | `Player_Release_Final.log` |
 
-Unity.exe -batchmode -nographics -quit -projectPath D:\UGit\PetOffline `
-  -executeMethod PetOffline.Editor.ProjectAutomation.SetupBatch
+所有相对证据路径均位于 `Artifacts/TestResults`。
 
-Unity.exe -batchmode -nographics -projectPath D:\UGit\PetOffline `
-  -runTests -testPlatform EditMode -testResults Artifacts\TestResults\EditMode_M1.xml
+## 指定 19 项 P0 覆盖
 
-Unity.exe -batchmode -projectPath D:\UGit\PetOffline `
-  -runTests -testPlatform PlayMode -testResults Artifacts\TestResults\PlayMode_M1.xml
+| # | 要求 | 最终状态 | 主要覆盖 |
+| --- | --- | --- | --- |
+| 1 | Architecture boundary test | PASS | EditMode asmdef/世界 UI 边界 + Validator |
+| 2 | UIRoot disabled gameplay test | PASS | Bootstrap/World PlayMode 断电测试 |
+| 3 | UIRoot mock preview test | PASS | `90_UIRoot_Test` Mock/生产面板测试 |
+| 4 | Day 1 shoe completion | PASS | 2 秒 Goal Hold |
+| 5 | Day 1 detection reset | PASS | Camera B 当前任务局部重置 |
+| 6 | Day 1 previous-task preservation | PASS | 抱枕失败不回退拖鞋 |
+| 7 | Day 1 pillow and robot interaction | PASS | 重物 Bark 掉落、Robot 推动、Q 推动 |
+| 8 | Day 1 final report transition | PASS | Final Bark → Report → Ending → Day 2 |
+| 9 | Day 2 first 10-second confirmation | PASS | SunFirst/CameraCheck |
+| 10 | Day 2 feeder return resets progress | PASS | 回投食器后 SunTime 清零 |
+| 11 | Day 2 ignored confirmation pauses progress | PASS | 警戒增强且进度暂停 |
+| 12 | Day 2 feeder-camera disable | PASS | BananaPeel + Robot，`FoodCameraActive=false` |
+| 13 | Day 2 backup-camera activation | PASS | SideDoor 世界触发 |
+| 14 | Day 2 wrong-route confirmation | PASS | Backup 下一次 10 秒确认不被跳过 |
+| 15 | Day 2 correct-route 20-second completion | PASS | 客厅路线、无重捕获、FinalSun 完成 |
+| 16 | Restore Connection ending | PASS | 真实按钮 + 10 秒确认循环重启 + Ending |
+| 17 | Keep Quiet ending | PASS | 真实按钮 + 睡眠演出 + 固定字幕 |
+| 18 | Save/unlock | PASS | PlayerPrefs 保存、Day 2 解锁、两个独立 Player 进程 Continue |
+| 19 | Full title-to-ending smoke | PASS | Windows Player 中 New Game/Continue、两关、报告、Choice、Return/Restart |
 
-Unity.exe -batchmode -nographics -projectPath D:\UGit\PetOffline `
-  -executeMethod PetOffline.Editor.ProjectValidator.ValidateBatch
-```
+## Standalone 说明
 
-Unity 6 Test Runner 完成后在本机保留了 Editor 进程；自动化按 ProjectPath 只关闭 PetOffline 实例并确认 `Temp/UnityLockfile` 清除，未触碰另一个已打开的 Unity 项目。
+- `StandalonePlayMode_Screenshots_Final.xml` 来自 Unity Test Framework 构建并启动的真实 Windows Player，使用正式 Bootstrap、additive World Scene、Physics2D、状态机和生产 UGUI；只缩短等待并通过公开 Gameplay/API 推进，不直接写权威 Flow 状态。
+- 跨进程证据分为两个独立 Player：第一个完成流程并保留 `DayOneCompleted`，第二个禁止测试内 Seed，直接读取已有 PlayerPrefs 后点击生产 `ContinueButton` 进入 Day 2。
+- 最终 Release 另行启动 12 秒，窗口标题为 `Pet Offline`、进程响应正常，再通过 Alt+F4 正常关闭；该项是 Release launch smoke，不冒充人工 12–15 分钟完整分支。
 
-## 最终执行结果
+## 截图证据
 
-| Gate | 状态 | 结果文件 |
-| --- | --- | --- |
-| Day 1 Setup / Scene generation | PASS | `DayOneSetup.log`、`ProjectSetup_M1_Fixed.log` |
-| EditMode | PASS 2/2、Failed 0、Skipped 0 | `EditMode_M1.xml`、`EditMode_M1.log` |
-| PlayMode | PASS 11/11、Failed 0、Skipped 0 | `PlayMode_M1.xml`、`PlayMode_M1.log` |
-| Architecture Validator | PASS | `ValidationReport.txt`、`Validation_M1.log` |
-| Missing Script / RequiredReference | PASS（当前 M0/M1 Scene） | Validator 递归 Scene 层级并检查必需引用 |
-| Full title-to-Restore smoke | NOT RUN | Milestone 2/3/5 |
-| Full title-to-Quiet smoke | NOT RUN | Milestone 2/3/5 |
-| Windows x64 Development/Release | NOT RUN | `Builds/Windows/PetOffline.exe` 尚不存在 |
-| Screenshots | NOT RUN | Milestone 4/5 |
+`Artifacts/Screenshots` 中以下文件为 1920×1080：
 
-## 通过的 EditMode
+- `Title.png`
+- `Day1_Opening.png`
+- `Day1_Report.png`
+- `Day2_CameraOffline.png`
+- `Day2_BackupActive.png`
+- `Day2_Report.png`
+- `Day2_Choice.png`
+- `Ending_KeepQuiet.png`
+- `Ending_Restore.png`
 
-- `ProjectValidatorPasses`：asmdef、Scene、Build Settings、Layer、世界/UI 边界、Missing Script、RequiredReference、唯一 Day1/Day2 runtime。
-- `DayOneCameraAndCarryConfigsMatchPlayableBaseline`：拖鞋 2 秒、Camera B 7.1/54°/0.24 秒、轻物 0.85、重物 0.60、Bark 掉落与 Robot push 0.65。
+测试机的隐藏 Player 会话被系统限制为 1024×768。完整 UGUI 原始帧保留在 `Artifacts/Screenshots/Native`；报告、选择和结局图由这些真实帧居中裁切为 16:9 并高质量缩放到 1920×1080。标题和世界状态图使用 1920×1080 相机渲染证据。该限制不影响逻辑测试，但不等同于目标显示器上的最终人工视觉验收。
 
-## 通过的 PlayMode
+## Build 与离线检查
 
-- Bootstrap 持久服务、无 World 等待状态。
-- 同时切关请求只加载一个 World Scene。
-- 返回标题停止持久 DialogueDirector 且不执行旧 completion callback。
-- UIRoot_Test 在无 World 时绑定 Mock ViewModel。
-- 拖鞋 Goal 需要 2 秒。
-- Camera B 只重置当前拖鞋任务。
-- 抱枕失败保留已完成拖鞋任务。
-- 检测不会取消正在进行的 Boss Call。
-- Boss Call 成功冻结 Camera B 扫描 3 秒；超时进入约 7 秒扩大警戒并自动恢复。
-- 重抱枕 Bark 掉落，Robot 推动 0.65，狗窝 Goal 立即完成。
-- 关闭整个 UIRoot 后仍通过真实 Gameplay Action Map 完成移动、搬运、滑行锁、Camera/Robot FixedUpdate、真实 Goal Trigger、Final Bark、Report→Ending、DayOneCompleted 保存、Day 1 卸载和 Day 2 runtime 绑定。
+- `Builds/Windows/Development/PetOffline.exe` 与 `Builds/Windows/PetOffline.exe` 均由 `WindowsBuildAutomation` 生成。
+- 构建前会清理对应旧输出，避免 Managed DLL 残留。
+- `Packages/manifest.json` / `packages-lock.json` 不含 `com.unity.ai.assistant`。
+- 两个 Build 的 `*_Data/Managed` 均未发现 `Unity.AI.*`。
+- Unity Connect、Diagnostics、Analytics/Ads 启动与 `submitAnalytics` 已关闭；仍需在断网干净机上完成外部验证。
 
-## P0 清单状态
+## 未执行的人工/环境测试
 
-- [x] Architecture boundary test（M0/M1 范围）
-- [ ] UIRoot disabled gameplay test（Day 1 已通过；Day 2 待 Milestone 2）
-- [x] UIRoot mock preview test（当前 Mock 范围）
-- [x] Day 1 shoe completion test
-- [x] Day 1 detection reset test
-- [x] Day 1 previous-task preservation test
-- [x] Day 1 pillow and robot interaction test
-- [x] Day 1 final report transition test
-- [ ] Day 2 first 10-second confirmation test
-- [ ] Day 2 feeder return resets progress test
-- [ ] Day 2 ignored confirmation pauses progress test
-- [ ] Day 2 feeder-camera disable test
-- [ ] Day 2 backup-camera activation test
-- [ ] Day 2 wrong-route confirmation test
-- [ ] Day 2 correct-route 20-second completion test
-- [ ] Restore Connection ending test
-- [ ] Keep Quiet ending test
-- [ ] Save/unlock test（DayOneCompleted + Day2 load 已覆盖；跨进程 Continue 待 M5）
-- [ ] Full title-to-ending smoke：Restore Connection
-- [ ] Full title-to-ending smoke：Keep Quiet
+- 首次玩家完整 12–15 分钟计时与教学理解度。
+- 目标机 60 FPS、1% low、GC/Profiler 证据。
+- 长时间暂停、窗口失焦/恢复和多显示器行为。
+- 第二台电脑/VM 或新 Windows 用户的断网干净机运行。
+- Release 人工完整走完一条正常时长分支。
 
-## 失败与修复记录
-
-首次 M1 PlayMode 基线为 8/9，失败于 UIRoot-disabled 测试的合成键盘移动。根因是 batchmode 无 Game View 焦点，而测试复用/新增 Keyboard 时未设置 Input System 的 Editor/background 行为。修复为独立虚拟 Keyboard、`IgnoreFocus`、`AllDeviceInputAlwaysGoesToGameView` 和显式 device filter；重跑后完整 PlayMode 11/11。
-
-测试结果只有在 XML 为 Passed、Failed=0、最终日志无编译/引用异常且 Unity 进程退出后才记为通过。
+这些项目记录在 `KNOWN_GAPS.md`，不应被本报告中的自动化 PASS 替代。

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c3db162d4f74934a91f8efc08c799be, type: 3}
+  m_Name: Dialogue_D2_Restore
+  m_EditorClassIdentifier: PetOffline.Core::PetOffline.Core.DialogueSequenceSO
+  sequenceId: D2.Restore
+  pauseGameplay: 0
+  skippable: 1
+  completionEventId: D2.Restore.Complete
+  lines:
+  - speakerId: AI
+    text: "\u8FDC\u7A0B\u786E\u8BA4\u5DF2\u6062\u590D\u3002\u5168\u5929\u5019\u966A\u4F34\u6A21\u5F0F\u5F00\u542F\u3002"
+    duration: 1.9
+  - speakerId: Owner
+    text: "\u62FF\u94C1\uFF1F\u7238\u7238\u53C8\u80FD\u770B\u89C1\u4F60\u4E86\u3002"
+    duration: 1.8

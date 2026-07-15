@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.3237526">
+  <test-suite type="TestSuite" id="1000" name="Pet Offline" fullname="Pet Offline" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.323753" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1005" name="PetOffline.Tests.EditMode.dll" fullname="D:/UGit/PetOffline/Library/ScriptAssemblies/PetOffline.Tests.EditMode.dll" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.312496" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="4968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1006" name="PetOffline" fullname="PetOffline" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.311361" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1007" name="Tests" fullname="PetOffline.Tests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.311125" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1008" name="EditMode" fullname="PetOffline.Tests.EditMode" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.310703" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="ArchitectureBoundaryTests" fullname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests" classname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.309568" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1003" name="DayOneCameraAndCarryConfigsMatchPlayableBaseline" fullname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests.DayOneCameraAndCarryConfigsMatchPlayableBaseline" methodname="DayOneCameraAndCarryConfigsMatchPlayableBaseline" classname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests" runstate="Runnable" seed="1972574402" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:47Z" duration="0.020455" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="DayTwoConfigsAndFixedReportMatchPlayableBaseline" fullname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests.DayTwoConfigsAndFixedReportMatchPlayableBaseline" methodname="DayTwoConfigsAndFixedReportMatchPlayableBaseline" classname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests" runstate="Runnable" seed="1393207859" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:47Z" duration="0.012308" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1002" name="ProjectValidatorPasses" fullname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests.ProjectValidatorPasses" methodname="ProjectValidatorPasses" classname="PetOffline.Tests.EditMode.ArchitectureBoundaryTests" runstate="Runnable" seed="1964958296" result="Passed" start-time="2026-07-15 15:20:47Z" end-time="2026-07-15 15:20:48Z" duration="0.259002" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/pc/AppData/LocalLow/DefaultCompany/Pet Offline\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

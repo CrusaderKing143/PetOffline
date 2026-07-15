@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27a9bbf61ce4a59bb2b4fb544a09d17, type: 3}
+  m_Name: Report_Day2
+  m_EditorClassIdentifier: PetOffline.Core::PetOffline.Core.ReportDefinitionSO
+  reportId: D2.Report
+  title: "\u62FF\u94C1\u7B2C\u4E8C\u65E5\u966A\u4F34\u62A5\u544A"
+  fields:
+  - label: "\u6652\u592A\u9633"
+    value: "\u5DF2\u5B8C\u6210\uFF0820 \u79D2\uFF09"
+  - label: "\u8FDC\u7A0B\u786E\u8BA4"
+    value: "\u5931\u8D25"
+  - label: "\u6295\u98DF\u5668\u6444\u50CF\u5934"
+    value: CAMERA OFFLINE
+  - label: "\u5F53\u524D\u753B\u9762"
+    value: "\u5899"
+  - label: "\u60C5\u7EEA\u5224\u65AD"
+    value: "\u65E0\u6CD5\u786E\u8BA4\u62FF\u94C1\u662F\u5426\u4ECD\u7136\u60F3\u5FF5\u4E3B\u4EBA"
+  warning: "\u5173\u95ED\u540E\uFF0C\u60A8\u5C06\u65E0\u6CD5\u5B9E\u65F6\u786E\u8BA4\u62FF\u94C1\u662F\u5426\u4ECD\u5728\u60F3\u60A8\u3002"
+  continueLabel: "\u8FDB\u5165\u6700\u7EC8\u9009\u62E9"
+  choicePrompt: "\u662F\u5426\u6062\u590D\u8FDC\u7A0B\u786E\u8BA4\uFF1F"
+  recommendedChoice: 1

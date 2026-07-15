@@ -40,15 +40,16 @@ namespace PetOffline.Editor
 
             var report = EnsureAsset<ReportDefinitionSO>(ReportPath, asset => asset.Configure(
                 "D1.Report",
-                "Meeting Performance Report",
+                "拿铁会议表现报告",
                 new[]
                 {
                     new ReportField("远程指令响应", "成功"),
                     new ReportField("主人气味资产展示", "1 次"),
-                    new ReportField("企业文化下沉", "已完成"),
-                    new ReportField("会议秩序影响", "可控"),
-                    new ReportField("情绪判断", "无法确认是否仍想念主人"),
-                    new ReportField("建议", "明日继续接入会议")
+                    new ReportField("企业文化物料接触", "1 次"),
+                    new ReportField("行为安全警报", "已折叠"),
+                    new ReportField("情绪价值输出", "优秀"),
+                    new ReportField("主人贡献度", "一般"),
+                    new ReportField("建议", "明日继续接入会议。")
                 }, "展开后影响阅读体验。", "继续"));
 
             var level = EnsureAsset<LevelConfigSO>(LevelPath, asset =>
@@ -129,7 +130,8 @@ namespace PetOffline.Editor
             var mouth = Child(playerObject.transform, "MouthAnchor");
             mouth.transform.localPosition = new Vector3(0f, -0.48f, 0f);
             var carry = playerObject.AddComponent<CarryController>();
-            carry.Configure(player, mouth.transform, LayerMask.GetMask("Carryable"), 1.1f, 0.55f);
+            carry.Configure(player, mouth.transform, LayerMask.GetMask("Carryable"), 1.1f, 0.55f,
+                LayerMask.GetMask("WorldStatic"));
 
             var slipper = CreateCarryable(interactables.transform, "OwnerSlipper", new Vector2(-5.35f, -3.8f),
                 new Vector2(0.72f, 0.28f), new Color(0.88f, 0.34f, 0.27f), slipperConfig, true);
@@ -139,6 +141,7 @@ namespace PetOffline.Editor
             var bananaObject = SpriteObject(interactables.transform, "BananaSlipZone", new Vector2(0f, -0.75f),
                 new Vector2(1.25f, 0.5f), new Color(1f, 0.82f, 0.12f, 0.8f), "GroundDecal", "WorldTrigger");
             var bananaTrigger = bananaObject.AddComponent<BoxCollider2D>();
+            bananaTrigger.size = Vector2.one;
             bananaTrigger.isTrigger = true;
             var banana = bananaObject.AddComponent<BananaSlipZone>();
             banana.Configure(bananaTrigger, bananaObject.GetComponent<SpriteRenderer>(), levelConfig, Vector2.right);
@@ -183,6 +186,7 @@ namespace PetOffline.Editor
                 new Vector2(0.9f, 0.55f), new Color(0.34f, 0.85f, 0.67f), "Actor", "Robot");
             var robotBody = robotObject.AddComponent<Rigidbody2D>();
             var robotCollider = robotObject.AddComponent<BoxCollider2D>();
+            robotCollider.size = Vector2.one;
             var robot = robotObject.AddComponent<RobotPatrol>();
             robot.Configure(robotBody, robotCollider, robotObject.GetComponent<SpriteRenderer>(), waypoints,
                 levelConfig.RobotPatrolSpeed);
@@ -211,7 +215,7 @@ namespace PetOffline.Editor
             var context = levelFlow.AddComponent<LevelSceneContext>();
             context.Configure(LevelId.Day1, levelConfig.OpeningObjective);
             var flow = levelFlow.AddComponent<LevelOneFlowController>();
-            flow.Configure(context, levelConfig, player, carry, slipper, pillow, shoeGoal, bedGoal, cameraSensor,
+            flow.Configure(context, levelConfig, player, carry, slipper, pillow, shoeGoal, bedGoal, cameraSensor, robot,
                 playerSpawn, pillowRetry, speakerPoint, bedPoint);
 
             var cameraObject = Child(virtualCamera.transform, "CM_Day1");
@@ -220,6 +224,8 @@ namespace PetOffline.Editor
             cinemachineCamera.Priority = 10;
             cinemachineCamera.Lens.ModeOverride = LensSettings.OverrideModes.Orthographic;
             cinemachineCamera.Lens.OrthographicSize = 5.6f;
+
+            WorldVisualAutomation.Polish(scene, LevelId.Day1);
 
             EditorSceneManager.MarkSceneDirty(scene);
             if (!EditorSceneManager.SaveScene(scene))
@@ -275,6 +281,7 @@ namespace PetOffline.Editor
             var body = gameObject.AddComponent<Rigidbody2D>();
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             var collider = gameObject.AddComponent<BoxCollider2D>();
+            collider.size = Vector2.one;
             var carryable = gameObject.AddComponent<CarryableObject>();
             carryable.Configure(body, collider, gameObject.GetComponent<SpriteRenderer>(), config, available);
             return carryable;
@@ -295,6 +302,8 @@ namespace PetOffline.Editor
             SetLayer(gameObject, physicsLayer);
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             renderer.sprite = GreyboxSprite();
+            renderer.drawMode = SpriteDrawMode.Sliced;
+            renderer.size = Vector2.one;
             renderer.color = color;
             renderer.sortingLayerName = sortingLayer;
             return gameObject;
@@ -312,7 +321,9 @@ namespace PetOffline.Editor
             gameObject.transform.position = position;
             gameObject.transform.localScale = new Vector3(size.x, size.y, 1f);
             SetLayer(gameObject, physicsLayer);
-            gameObject.AddComponent<BoxCollider2D>().isTrigger = isTrigger;
+            var collider = gameObject.AddComponent<BoxCollider2D>();
+            collider.size = Vector2.one;
+            collider.isTrigger = isTrigger;
             return gameObject;
         }
 

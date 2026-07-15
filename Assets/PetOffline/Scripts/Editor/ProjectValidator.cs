@@ -40,6 +40,12 @@ namespace PetOffline.Editor
             "Ground", "GroundDecal", "FurnitureBack", "Actor", "Carried", "FurnitureFront", "WorldFX", "WorldUI"
         };
 
+        static readonly string[] RequiredAudioCues =
+        {
+            "Audio_Bark.asset", "Audio_Robot.asset", "Audio_CameraAlert.asset", "Audio_FeederOffline.asset",
+            "Audio_UIConfirm.asset", "Audio_UIReport.asset", "Audio_Ambience.asset"
+        };
+
         static readonly HashSet<string> ForbiddenBelowCanvas = new()
         {
             "PlayerController2D", "CarryController", "CameraVisionSensor2D", "RobotPatrol", "LevelFlowController"
@@ -88,6 +94,8 @@ namespace PetOffline.Editor
             ValidateBuildSettings(errors);
             ValidateLayers(errors);
             ValidateDayOneAssets(errors);
+            ValidateDayTwoAssets(errors);
+            ValidateAudioAssets(errors);
             ValidateScenes(errors);
             return errors;
         }
@@ -115,6 +123,61 @@ namespace PetOffline.Editor
             if (AssetDatabase.LoadAssetAtPath<CarryableConfigSO>(
                     "Assets/PetOffline/Data/Carryables/Carryable_Pillow.asset") == null)
                 errors.Add("Missing Day 1 pillow carry config.");
+        }
+
+        static void ValidateDayTwoAssets(List<string> errors)
+        {
+            var level = AssetDatabase.LoadAssetAtPath<LevelConfigSO>(
+                "Assets/PetOffline/Data/Levels/Level_Day2.asset");
+            if (level == null)
+                errors.Add("Missing Day 2 LevelConfigSO.");
+            var report = AssetDatabase.LoadAssetAtPath<ReportDefinitionSO>(
+                "Assets/PetOffline/Data/Reports/Report_Day2.asset");
+            if (report == null)
+                errors.Add("Missing Day 2 report.");
+            if (level != null)
+            {
+                if (level.DayTwoReport == null || level.DayTwoReport != report)
+                    errors.Add("Day 2 LevelConfigSO is missing its fixed report reference.");
+                foreach (var id in new[]
+                         {
+                             "D2.Opening", "D2.FirstConfirm", "D2.ConfirmReturn", "D2.FeederOffline",
+                             "D2.BackupActive", "D2.BackupConfirm", "D2.Complete", "D2.Restore", "D2.KeepQuiet"
+                         })
+                    if (level.DayTwoDialogue(id) == null)
+                        errors.Add($"Day 2 LevelConfigSO is missing dialogue {id}.");
+            }
+            if (AssetDatabase.LoadAssetAtPath<CameraScanConfigSO>(
+                    "Assets/PetOffline/Data/Cameras/Camera_Day2_Feeder.asset") == null)
+                errors.Add("Missing Day 2 feeder-camera scan config.");
+            if (AssetDatabase.LoadAssetAtPath<CameraScanConfigSO>(
+                    "Assets/PetOffline/Data/Cameras/Camera_Day2_Backup.asset") == null)
+                errors.Add("Missing Day 2 backup-camera scan config.");
+            if (AssetDatabase.LoadAssetAtPath<CarryableConfigSO>(
+                    "Assets/PetOffline/Data/Carryables/Carryable_BananaPeel.asset") == null)
+                errors.Add("Missing Day 2 banana-peel carry config.");
+
+            foreach (var name in new[]
+                     {
+                         "Opening", "FirstConfirm", "ConfirmReturn", "FeederOffline", "BackupActive",
+                         "BackupConfirm", "Complete", "Restore", "KeepQuiet"
+                     })
+                if (AssetDatabase.LoadAssetAtPath<DialogueSequenceSO>(
+                        $"Assets/PetOffline/Data/Dialogue/Dialogue_D2_{name}.asset") == null)
+                    errors.Add($"Missing Day 2 dialogue sequence: D2.{name}.");
+        }
+
+        static void ValidateAudioAssets(List<string> errors)
+        {
+            foreach (var fileName in RequiredAudioCues)
+            {
+                var cue = AssetDatabase.LoadAssetAtPath<AudioCueDefinitionSO>(
+                    $"Assets/PetOffline/Data/Audio/{fileName}");
+                if (cue == null)
+                    errors.Add($"Missing AudioCueDefinitionSO: {fileName}");
+                else if (cue.Clip == null)
+                    errors.Add($"Audio cue has no clip: {fileName}");
+            }
         }
 
         static void ValidateAssemblyBoundaries(List<string> errors)
@@ -340,6 +403,14 @@ namespace PetOffline.Editor
                     errors.Add($"{scene.name}/{GetPath(transform)} is a world object using RectTransform.");
             }
 
+            var ambience = worldRoot.transform.Find("WorldAudio")?.GetComponent<AudioSource>();
+            if (ambience == null || ambience.clip == null || !ambience.loop)
+                errors.Add($"{scene.name}/WorldRoot/WorldAudio is missing its looping ambience clip.");
+
+            var latteVisual = worldRoot.transform.Find("Actors/Latte")?.GetComponent<LatteVisual2D>();
+            if (latteVisual == null || latteVisual.BarkCue == null || latteVisual.BarkCue.Clip == null)
+                errors.Add($"{scene.name}/WorldRoot/Actors/Latte is missing its bark AudioCueDefinitionSO.");
+
             if (scene.path == SceneNames.Day1Path)
                 ValidateDayOne(worldRoot, errors);
             else if (scene.path == SceneNames.Day2Path)
@@ -386,9 +457,57 @@ namespace PetOffline.Editor
 
         static void ValidateDayTwo(GameObject worldRoot, List<string> errors)
         {
+            foreach (var path in new[]
+                     {
+                         "Environment/LivingRoom", "Environment/Kitchen", "Environment/Balcony",
+                         "Actors/Latte", "Interactables/BananaPeel", "Interactables/OwnerSlipper",
+                         "Devices/FutureFeeder",
+                         "Devices/FeederCamera", "Devices/RobotVacuum", "Devices/BackupCamera",
+                         "Devices/FeederStatusText", "Devices/BackupStatusText", "Sensors/FeederCameraVision",
+                         "Sensors/BackupCameraVision",
+                         "Triggers/PlayerSpawn", "Triggers/BackupRetrySpawn", "Triggers/EndingSniffPoint", "Triggers/EndingSleepPoint",
+                         "Triggers/SunZone", "Triggers/FeederConfirmationArea", "Triggers/SideDoorTrigger",
+                         "Paths/RobotPath_Day2", "VirtualCamera/CM_Day2"
+                     })
+                if (worldRoot.transform.Find(path) == null)
+                    errors.Add($"{SceneNames.Day2}/WorldRoot missing {path}.");
+
             var flows = worldRoot.GetComponentsInChildren<LevelFlowController>(true);
             if (flows.Length != 1 || flows[0] is not LevelTwoFlowController)
                 errors.Add("Day 2 must contain exactly one LevelTwoFlowController.");
+
+            var latte = worldRoot.transform.Find("Actors/Latte")?.GetComponent<PlayerController2D>();
+            if (latte == null)
+                errors.Add("Day 2 Latte is missing PlayerController2D.");
+
+            var banana = worldRoot.transform.Find("Interactables/BananaPeel")?.GetComponent<CarryableObject>();
+            var bananaConfig = AssetDatabase.LoadAssetAtPath<CarryableConfigSO>(
+                "Assets/PetOffline/Data/Carryables/Carryable_BananaPeel.asset");
+            if (banana == null || banana.Config != bananaConfig)
+                errors.Add("Day 2 BananaPeel must use Carryable_BananaPeel.");
+
+            if (worldRoot.transform.Find("Devices/RobotVacuum")?.GetComponent<RobotPatrol>() == null)
+                errors.Add("Day 2 RobotVacuum is missing RobotPatrol.");
+            if (worldRoot.transform.Find("Devices/FutureFeeder")?.GetComponent<Collider2D>() == null)
+                errors.Add("Day 2 FutureFeeder is missing the robot-contact Collider2D.");
+
+            foreach (var path in new[] { "Sensors/FeederCameraVision", "Sensors/BackupCameraVision" })
+            {
+                var sensorTransform = worldRoot.transform.Find(path);
+                if (sensorTransform?.GetComponent<CameraVisionSensor2D>() == null)
+                    errors.Add($"Day 2 {path} is missing CameraVisionSensor2D.");
+                if (sensorTransform?.GetComponent<LineRenderer>() == null)
+                    errors.Add($"Day 2 {path} is missing its world-space vision cone.");
+            }
+
+            foreach (var path in new[] { "Triggers/SunZone", "Triggers/FeederConfirmationArea", "Triggers/SideDoorTrigger" })
+            {
+                var trigger = worldRoot.transform.Find(path);
+                var collider = trigger?.GetComponent<Collider2D>();
+                if (trigger?.GetComponent<PlayerTrigger2D>() == null || collider == null || !collider.isTrigger)
+                    errors.Add($"Day 2 {path} must be a world PlayerTrigger2D with a trigger Collider2D.");
+            }
+
         }
 
         static bool ContainsComponent(Scene scene, Type type)

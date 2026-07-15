@@ -1,0 +1,6 @@
+Result: Succeeded
+Output: D:\UGit\PetOffline\Builds/Windows\PetOffline.exe
+SizeBytes: 126796871
+Errors: 0
+Warnings: 0
+Duration: 00:00:32.3288881
