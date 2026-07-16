@@ -1,42 +1,461 @@
-# Codex Project Instructions
+# Pet Offline Unity Project Instructions
 
-请使用中文写提案和回答。
+## 1. Project Goal
 
-本项目是 Unity/TEngine 项目，TEngine 基于 HybridCLR + YooAsset + UniTask + Luban 构建。
+Build a complete, playable Unity vertical slice of:
 
-## 强制工作流
+Pet Offline / 《老板，我狗开会了》
 
-无论任务大小，先判断任务等级，再决定需要读取哪些项目知识库资料。
+The deliverable is a 12–15 minute PC game containing:
 
-| 等级 | 判断标准 | 知识查询策略 |
-| --- | --- | --- |
-| L1 简单 | typo 修正、注释修改、日志输出、单行变量改名；前提是不涉及框架 API 名称、UI 节点前缀、事件定义或资源路径 | 可跳过查询，直接编码 |
-| L2 调用 | 调用已知 API、单一模块的局部修改 | 先读取 `.codex/skills/tengine-dev` 中对应主题 |
-| L3 功能 | 新功能开发、跨文件修改、新增 UI/资源/事件逻辑 | 先读取 `.codex/skills/tengine-dev` 中所有相关主题 |
-| L4 架构 | 模块设计、系统重构、多模块协作、架构决策 | 先读取 `.codex/skills/tengine-dev` 中多个相关主题，并交叉验证 |
+Title Screen
+→ Day 1: 狗已上线
+→ Day 1 Report
+→ Day 2: 偷偷安抚
+→ Day 2 Report
+→ Final Choice
+→ Ending
+→ Return to Title / Restart
 
-判断原则：宁可高估等级，不可低估；不确定时上调一级。
+This is a complete two-level vertical slice, not a commercial full game.
 
-## 项目知识库
+Target:
+- Unity 6 LTS
+- Windows x64
+- 1920×1080, 16:9
+- 2D isometric / 斜45度俯视
+- Keyboard and mouse
+- Offline
+- Fixed dialogue
+- No generative AI runtime
+- No web dependency
 
-Codex 侧迁移后的知识库位于 `.codex/skills/`。在处理相关任务时，优先读取对应 `SKILL.md`，再按其中的 reference 路由读取必要文档。
+Do not implement the discarded three-chapter version, questionnaires, research pages,
+or unrelated early concepts from the source PDF.
 
-常用 skill：
+## 2. Source of Truth
 
-- `tengine-dev`：TEngine 框架开发、UI、资源、事件、模块、热更、YooAsset、HybridCLR。
-- `luban-dev`：Luban 配置表、Excel/Schema、导表、配置代码生成。
-- `html-to-ugui`：HTML/UI DSL 转 UGUI。
-- `wiki-synchelper`：项目实现与 `repowiki/` 文档之间的同步、比对、报告。
-- `openspec-*`：OpenSpec 提案、探索、应用、归档工作流。
+Read all files before implementation.
 
-## 核心编码红线
+Priority order:
 
-1. 异步优先：IO 操作用 `UniTask`，禁止同步加载和 Coroutine。
-2. 模块访问：通过 `GameModule.XXX` 访问，而不是 `ModuleSystem.GetModule<T>()`。
-3. 资源必须释放：`LoadAssetAsync` 对应 `UnloadAsset`，GameObject 使用 `LoadGameObjectAsync`。
-4. 热更边界：`GameScripts/Main` 不热更，`GameScripts/HotFix/` 全部热更。
-5. 事件解耦：模块间使用 `GameEvent`，UI 内部使用 `AddUIEvent`。
-6. 当不在GOAL模式中完成功能开发后不进行C#编译，也不进行验证，在GOAL模式中可以进行编译和验证
+1. Docs/Reference/02_UnityImplementationPlan.html
+   Technical architecture, scenes, C# responsibilities, backlog, tests and build rules.
+
+2. Docs/Reference/01_UnityDesignPlan.html
+   Final gameplay, experience, level flow, theme and UGUI/Game separation.
+
+3. Docs/Reference/03_LatestDesignSource.pdf
+   Original design source, visual diagrams, dialogue and final program requirements.
+   When reading this PDF, prioritize the late-stage sections named:
+   - 第一关程序需求文档
+   - 第二关程序需求文档
+
+4. Docs/Reference/04_WebPlayableReference.html
+   Interaction, timing and behavioral reference only.
+   Never copy its single-Canvas architecture into Unity.
+
+5. Docs/Reference/05_ArtSource.mg
+   Art and visual reference. Extract usable assets when possible.
+   If the format cannot be parsed, use clean replaceable placeholders and document the gap.
+
+If an older file named 朱佳琪项目一.pdf exists, treat it only as historical reference.
+
+When sources conflict:
+02_UnityImplementationPlan.html
+> 01_UnityDesignPlan.html
+> final program requirement sections in the latest PDF
+> web demo
+> early drafts.
+
+Create Docs/Development/SOURCE_OF_TRUTH.md summarizing every resolved conflict.
+
+## 3. Non-Negotiable Architecture Contract
+
+World owns gameplay; UGUI presents state.
+
+### Game World must contain
+
+Use normal world-space GameObjects with Transform, SpriteRenderer,
+Rigidbody2D, Collider2D, Animator, AudioSource and world-space effects for:
+
+- Latte player character
+- Apartment floor, walls and furniture
+- Owner slipper
+- Boss pillow
+- Banana peel / banana slip zone
+- Cleaning robot
+- Feeder
+- Camera A
+- Camera B
+- Feeder camera
+- Backup camera
+- Camera vision cones
+- Vision occlusion
+- Dog bed goal area
+- Camera A goal area
+- SunZone
+- Feeder confirmation area
+- Side-door trigger
+- Robot waypoint paths
+- World collision
+- World audio
+- Automatic ending performances
+
+### UGUI may contain only
+
+- Title menu
+- HUD
+- Current objective
+- Progress bars
+- Interaction prompts
+- Owner video panel
+- Boss dialogue panel
+- AI notifications
+- Subtitles
+- Bark timing prompt
+- Daily reports
+- Final choice
+- Pause/settings
+- Screen fades
+- Toasts and achievements
+
+World Space Canvas is allowed only for small prompts or markers.
+It must not own gameplay state.
+
+### Forbidden implementations
+
+- Do not implement Latte as a UI Image.
+- Do not move gameplay objects through RectTransform or anchoredPosition.
+- Do not implement camera detection using GraphicRaycaster.
+- Do not put the apartment inside a Canvas.
+- Do not embed the HTML game through WebView.
+- Do not render the entire Main Camera into one RawImage and perform gameplay there.
+- Do not let ReportPanel, HUD or other UI scripts directly enable cameras,
+  move characters or advance mission state.
+- Do not store authoritative mission state inside UI scripts.
+
+RenderTexture is allowed only for a real in-world monitor, camera capture,
+or optional meeting screen.
+
+### Assembly dependency rule
+
+PetOffline.UI → PetOffline.Core
+PetOffline.Gameplay → PetOffline.Core
+
+PetOffline.UI and PetOffline.Gameplay must not reference one another.
+
+Gameplay exposes read-only events and ILevelViewModel.
+UI sends high-level commands through ICommandSink.
+
+## 4. Required Scenes
+
+Create:
+
+- 00_Bootstrap
+- 10_Day1_Meeting
+- 20_Day2_Sunbath
+- 90_UIRoot_Test
+- 99_Test_Playground, optional
+
+00_Bootstrap contains persistent services:
+
+- GameSession
+- SceneFlowService
+- InputRouter
+- AudioService
+- SaveService
+- DialogueDirector
+- Main Camera / Cinemachine Brain
+- UIRoot
+
+Load each world level additively.
+Only one gameplay world level may be active at a time.
+
+World level scenes must contain:
+
+- WorldRoot
+- Environment
+- Collision
+- Actors
+- Interactables
+- Devices
+- Sensors
+- Triggers
+- Paths
+- WorldVFX
+- WorldAudio
+- LevelFlow
+- VirtualCamera
+
+They must not contain the screen HUD.
+
+## 5. Input
+
+Default bindings:
+
+- Move: WASD and arrow keys
+- Interact / pick up / drop: E
+- Bark: Space
+- Push: Q
+- Lie down / sunbathe: Left Shift
+- Pause: Escape
+- UI: mouse and keyboard navigation
+
+Use the Unity Input System with separate Gameplay and UI action maps.
+
+## 6. Day 1 Required Flow
+
+State order:
+
+Opening
+→ TaskShoes
+→ TaskPillow
+→ FinalBark
+→ Report
+→ Ending
+→ Complete
+
+### TaskShoes
+
+- Owner slipper starts beside the dog bed.
+- Camera A is a goal camera and never detects the player.
+- Camera B is the only hostile camera.
+- Camera B scans left and right on a fixed loop.
+- Latte may safely cross the cone while not carrying the current mission item.
+- Carrying the slipper inside Camera B detection triggers failure.
+- Failure resets only Latte, the slipper, Camera B angle and temporary alert state.
+- The opening must not replay.
+- The slipper must remain in Camera A GoalZone for two seconds.
+- On completion, lock the slipper and unlock the boss pillow.
+
+### TaskPillow
+
+- Boss pillow starts in front of Camera A.
+- It is a heavy carryable.
+- Heavy carry speed is approximately 60 percent.
+- Barking while carrying the pillow drops it.
+- Camera B detection resets only the pillow task.
+- Day 1 banana behavior is a configured BananaSlipZone.
+- The cleaning robot follows a fixed waypoint path.
+- The robot may block Latte and push a dropped pillow a configured distance.
+- The pillow completes immediately when it enters the dog-bed goal area.
+
+### Boss calls
+
+- Timed calls create a bark response window.
+- Successful response provides a brief safe window.
+- Missing the response temporarily increases Camera B scan speed and range.
+- Missing a call never causes Game Over.
+
+### Day 1 ending
+
+- Final bark has no failure state.
+- Show the fixed Meeting Performance Report.
+- Play the automatic speaker / dog-bed ending.
+- Save DayOneCompleted.
+- Load Day 2.
+
+## 7. Day 2 Required Flow
+
+State order:
+
+Start
+→ SunFirst
+→ CameraCheck
+→ Loop
+→ DestroyCamera
+→ Backup
+→ FinalSun
+→ Report
+→ Choice
+→ End
+
+### Sunbathing
+
+- The only visible main objective is:
+  让拿铁晒满20秒太阳
+- Latte must enter the world SunZone and lie down.
+- At 10 seconds, while the feeder camera is active, trigger confirmation.
+- During confirmation, sun progress pauses.
+- Returning to the feeder completes confirmation but resets sun progress to zero.
+- Ignoring confirmation temporarily enlarges and accelerates the scan.
+- No Game Over.
+
+### Destroying feeder confirmation
+
+- Day 2 uses a movable BananaPeel.
+- Latte can place the banana peel on the cleaning robot path.
+- The robot slips and can collide with the feeder.
+- The collision disables the feeder camera, not the whole feeder.
+- The feeder displays CAMERA OFFLINE / 当前画面：墙.
+- Gameplay state must record FoodCameraActive = false.
+
+### Backup camera lesson
+
+- Passing through the kitchen-to-balcony side door activates the backup camera.
+- Display BACKUP CAMERA ACTIVE.
+- If the player uses this incorrect route, the next 10-second confirmation loop still occurs.
+- The player must learn to disable the feeder camera and return through the living room,
+  avoiding the side-door trigger.
+- Completion requires no active confirmation camera to have reacquired Latte.
+- Latte then reaches 20 seconds and completes the level.
+
+### Report and ending
+
+Show the fixed Day 2 report, including:
+
+- Sunbathe completed
+- Confirmation failed
+- Camera offline
+- Current image: wall
+- Unable to confirm whether Latte still misses the owner
+
+Final choices:
+
+- Restore Connection:
+  show that the confirmation loop restarts.
+
+- Keep Quiet:
+  recommended ending.
+  Disable remote confirmation and play the sleep ending.
+
+Final subtitle:
+
+它不是不想你。
+它只是终于不用证明它在想你。
+
+## 8. Engineering Requirements
+
+Use:
+
+- Unity 6 LTS patch actually installed on this machine
+- URP 2D Renderer
+- Input System
+- TextMeshPro
+- Cinemachine where useful
+- Unity Test Framework
+- Assembly Definitions
+- ScriptableObject configuration
+- Event-driven UI presentation
+- Explicit level state machines
+
+Do not add DOTS, NavMesh, a third-party quest framework or unnecessary packages.
+
+Prefer Editor scripts and Unity APIs to generate scenes, prefabs and assets.
+Do not manually fabricate large Unity scene YAML files when Editor automation is available.
+
+Create configurable assets for:
+
+- LevelConfigSO
+- DialogueSequenceSO
+- ReportDefinitionSO
+- CameraScanConfigSO
+- CarryableConfigSO
+- AudioCueDefinitionSO
+
+Avoid FindObjectOfType-based architecture and fragile scene-name string logic.
+
+## 9. Required Validation Tools
+
+Create an Editor validation command:
+
+Tools/Pet Offline/Validate Project
+
+It must check:
+
+- No PlayerController2D exists below any Canvas.
+- No CarryController exists below any Canvas.
+- No CameraVisionSensor2D exists below any Canvas.
+- No RobotPatrol exists below any Canvas.
+- No LevelFlowController exists below any Canvas.
+- Gameplay world objects do not use RectTransform.
+- UI assembly does not reference Gameplay.
+- Gameplay assembly does not reference UI.
+- Required scenes are in Build Settings.
+- Required references are not missing.
+
+## 10. Tests
+
+Create EditMode and PlayMode tests.
+
+Required tests:
+
+- Architecture boundary test
+- UIRoot disabled gameplay test
+- UIRoot mock preview test
+- Day 1 shoe completion test
+- Day 1 detection reset test
+- Day 1 previous-task preservation test
+- Day 1 pillow and robot interaction test
+- Day 1 final report transition test
+- Day 2 first 10-second confirmation test
+- Day 2 feeder return resets progress test
+- Day 2 ignored confirmation pauses progress test
+- Day 2 feeder-camera disable test
+- Day 2 backup-camera activation test
+- Day 2 wrong-route confirmation test
+- Day 2 correct-route 20-second completion test
+- Restore Connection ending test
+- Keep Quiet ending test
+- Save/unlock test
+- Full title-to-ending smoke test
+
+## 11. Definition of Done
+
+The project is not done merely because scripts exist.
+
+Done means:
+
+- Unity opens with zero compile errors.
+- No missing script or missing reference exists.
+- Title Screen starts the game.
+- Day 1 is playable from start to report.
+- Day 2 is playable from start to final choice.
+- Both endings work.
+- Save/unlock and restart work.
+- All P0 tests pass.
+- Architecture validation passes.
+- Disabling UIRoot leaves world gameplay functional.
+- A standalone desktop build is produced.
+- The build has been launched and smoke-tested.
+- Screenshots are saved under Artifacts/Screenshots.
+- Test results are saved under Artifacts/TestResults.
+- Build is saved under Builds/Windows.
+- README contains controls, setup, build and test instructions.
+- Known limitations are documented honestly.
+
+## 12. Autonomous Work Policy
+
+Do not stop after producing a plan, file tree or code skeleton.
+
+Work milestone by milestone until the Definition of Done is met.
+
+For routine design choices:
+- choose a reasonable default;
+- record it in Docs/Development/DECISIONS.md;
+- continue working.
+
+Ask the user only when blocked by:
+- missing Unity installation;
+- missing Unity license activation;
+- permission required to launch Unity;
+- unrecoverable source asset corruption;
+- a genuinely irreversible product decision.
+
+Maintain:
+
+- PLAN.md
+- Docs/Development/STATUS.md
+- Docs/Development/DECISIONS.md
+- Docs/Development/KNOWN_GAPS.md
+- Docs/Development/TEST_REPORT.md
+
+Update STATUS.md after each milestone.
+
+Commit completed milestones to Git when possible.
+Do not overwrite user-created work without checking Git status.
+Do not claim something was tested unless the command or Unity run actually succeeded.
 
 ## Reference 路由
 
@@ -56,69 +475,3 @@ Codex 侧迁移后的知识库位于 `.codex/skills/`。在处理相关任务时
 
 
 
-# 开发原则
-
-不要过度封装函数。除非逻辑会被复用、能显著提升可读性，或有明确业务边界，否则保持内联实现。不要创建只调用另一个函数的 wrapper，也不要为了未来扩展创建抽象层。优先最小改动、贴合现有代码风格。
-
-
-
-````
-## Code Search
-
-Use `semble search` to find code by describing what it does or naming a symbol/identifier, instead of grep:
-
-```bash
-semble search "authentication flow" ./my-project
-semble search "save_pretrained" ./my-project
-semble search "save model to disk" ./my-project --top-k 10
-```
-
-Use `semble find-related` to discover code similar to a known location (pass `file_path` and `line` from a prior search result):
-
-```bash
-semble find-related src/auth.py 42 ./my-project
-```
-
-`path` defaults to the current directory when omitted; git URLs are accepted.
-
-If `semble` is not on `$PATH`, use `uvx --from "semble[mcp]" semble` in its place.
-
-### Workflow
-
-1. Start with `semble search` to find relevant chunks.
-2. Inspect full files only when the returned chunk is not enough context.
-3. Optionally use `semble find-related` with a promising result's `file_path` and `line` to discover related implementations.
-4. Use grep only when you need exhaustive literal matches or quick confirmation of an exact string.
-````
-
-
-
-当处于 goal mode，或用户 prompt 包含 `/goal` 时，必须进入本流程。
-
-在当前涉及到的 project 下创建新的目录：
-
-```txt
-goal-[num]/
-  input.md
-  plan.md
-  tasks.md
-```
-
-编号递增，不得覆盖已有目录。
-
-如过目前没有 project，你需要新建。
-
-- `input.md`：完整保存用户原始输入，逐字保留，不得改写。
-- `plan.md`：分析需求、上下文、风险、执行方案、验证方式、回滚方案。
-- `tasks.md`：把 plan 拆成小任务，每个 task 必须可独立验证。每三个task需要一次大型全面检查-debug循环，确保没有bug和问题。
-
-在完成以上文件前，不得修改代码。
-
-每次只执行一个 task。每次你想要结束task的时候，你必须思考：“你对当前实现100% 有信心吗？”如果没有，请找出所有可能的漏洞和提高的方案，提出合适的修复方案，然后不断重复这个循环，直到你对新实现在事实上达到100% 自信为止。
-然后你需要提交代码（若有）
-在tasks.md中把任务标记为完成并且写上你干的事情（你在tasks.md中需要留空用来干这些事）
-然后你不需要向用汇报自动开始下一轮task
-
-每次上下文压缩后，你必须全量读取这三个文件，以防止上下文模糊。
-
-全部task完成后，你需要进行最后的最大的review，全面从c端，代码，安全性等角度分析项目，并且进行修缮和测试，直到完美为止。然后把goal标记为完成
